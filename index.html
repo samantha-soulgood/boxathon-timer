@@ -247,6 +247,15 @@
 
   .sound-toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; cursor: pointer; user-select: none; }
   .head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .prep-ctl { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; user-select: none; }
+  .prep-ctl input { width: 52px; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-family: var(--font-mono); font-size: 13px; text-align: center; outline: none; }
+  .prep-ctl input:focus { border-color: var(--ember); }
+
+  /* Get-ready (prep) countdown */
+  .getready { text-align: center; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 2px; color: var(--ember); font-size: 13px; font-weight: 700; }
+  .getready:empty { display: none; }
+  .time.prep { color: var(--ember); }
+  body.wall .getready { font-size: clamp(12px, 4.5cqh, 26px); }
 
   /* ---- Wall display mode ---- */
   .wall-bar { display: none; }
@@ -345,6 +354,7 @@
         <span class="caret">▼</span> Laps — every timer steps through these
       </button>
       <div class="head-right">
+        <label class="prep-ctl" title="Get-ready countdown before each lap starts">⏳ Get-ready <input type="number" id="prepInput" min="0" max="60" step="1" value="5"> s</label>
         <label class="sound-toggle"><input type="checkbox" id="soundChk" checked> 🔔 sound + voice</label>
         <select id="voiceSelect" class="voice" title="Announcer voice"><option value="">Default voice</option></select>
       </div>
@@ -375,7 +385,7 @@
         <input type="text" id="nameInput" placeholder="Timer name (e.g. Station 1)" maxlength="40" autocomplete="off">
         <button class="primary" id="addBtn">+ Add Timer</button>
       </div>
-      <div class="hint">Each timer gets a keyboard key (1, 2, 3… by default, editable top-right of each card). Press that key to advance that timer to its next lap — hands-free.</div>
+      <div class="hint">Each timer gets a keyboard key (1, 2, 3… by default, editable top-right of each card) — press it to advance that timer to its next lap. Press <b>Space</b> to pause all, again to resume. Each lap starts after a get-ready countdown (set above).</div>
     </div>
     <div class="row global-controls">
       <button class="start-all" id="startAllBtn">▶ Start / Next Lap (All)</button>
@@ -395,9 +405,11 @@
   const KEY_LAPS = "multiTimerDashboard.lapDefs.v3";
   const KEY_WORKOUTS = "multiTimerDashboard.workouts.v1";
   const KEY_VOICE = "multiTimerDashboard.voiceURI";
+  const KEY_PREP = "multiTimerDashboard.prepMs";
   const KEY_ORDER = ["1","2","3","4","5","6","7","8","9","0"];  // default hotkeys, in order
 
   const grid = document.getElementById("grid");
+  const prepInput = document.getElementById("prepInput");
   const nameInput = document.getElementById("nameInput");
   const lapInput = document.getElementById("lapInput");
   const lapDuration = document.getElementById("lapDuration");
@@ -420,6 +432,10 @@
   let nextId = timers.reduce((m, t) => Math.max(m, t.id), 0) + 1;
   let workouts = loadObj(KEY_WORKOUTS, {});
   let selectedVoiceURI = ""; try { selectedVoiceURI = localStorage.getItem(KEY_VOICE) || ""; } catch (e) {}
+  let prepMs = 5000; // get-ready pause before each lap (default 5s)
+  try { const p = localStorage.getItem(KEY_PREP); if (p !== null && p !== "") prepMs = Math.max(0, Number(p)); } catch (e) {}
+  if (isNaN(prepMs)) prepMs = 5000;
+  if (prepInput) prepInput.value = String(Math.round(prepMs / 1000));
 
   function loadJSON(key, fallback) {
     try {
@@ -451,7 +467,8 @@
       currentLap: t.currentLap || 0,
       lapStartElapsed: t.lapStartElapsed || 0,
       lapTimes: Array.isArray(t.lapTimes) ? t.lapTimes : [],
-      key: t.key != null ? String(t.key) : (KEY_ORDER[i] || "")
+      key: t.key != null ? String(t.key) : (KEY_ORDER[i] || ""),
+      go: true   // transient: don't replay the "go" beep for a timer restored mid-lap
     }));
   }
   function nextFreeKey() {
@@ -467,6 +484,11 @@
   function currentLapElapsed(t) { return elapsed(t) - t.lapStartElapsed; }
   function isFinished(t) { return lapDefs.length > 0 && t.currentLap >= lapDefs.length; }
   function curDef(t) { return lapDefs.length && !isFinished(t) ? lapDefs[t.currentLap] : null; }
+  // A timer is "active" once it has been started (so a never-started timer shows no prep).
+  function isActive(t) { return !!t.startedAt || t.accumulated > 0 || t.currentLap > 0; }
+  // Each lap begins with a get-ready pause of prepMs, then the lap proper.
+  function inPrep(t) { return isActive(t) && !isFinished(t) && lapDefs.length > 0 && prepMs > 0 && currentLapElapsed(t) < prepMs; }
+  function prepRemaining(t) { return Math.max(0, prepMs - currentLapElapsed(t)); }
 
   function fmt(ms) {
     if (ms < 0) ms = 0;
@@ -611,7 +633,12 @@
     nameInput.value = ""; nameInput.focus();
     saveTimers(); render();
   }
-  function startTimer(t) { if (!isFinished(t) && !t.startedAt) t.startedAt = Date.now(); }
+  function startTimer(t) {
+    if (isFinished(t) || t.startedAt) return;
+    const freshLap = (t.accumulated - t.lapStartElapsed) <= 0; // no time accrued on this lap yet
+    t.startedAt = Date.now();
+    if (freshLap) t.go = false; // arm the "go" beep for the upcoming prep
+  }
   function stopTimer(t) { if (t.startedAt) { t.accumulated += Date.now() - t.startedAt; t.startedAt = null; } }
 
   // Record current lap and advance. `auto` rolls the clock by the exact lap
@@ -623,14 +650,15 @@
     let split, newStart;
     if (auto && def.duration) {
       split = def.duration;
-      newStart = t.lapStartElapsed + def.duration;
+      newStart = t.lapStartElapsed + prepMs + def.duration; // prep + lap, drift-free
     } else {
-      split = currentLapElapsed(t);
+      split = Math.max(0, currentLapElapsed(t) - prepMs);   // exclude the get-ready time
       newStart = elapsed(t);
     }
     t.lapTimes.push({ name, ms: split });
     t.currentLap += 1;
     t.lapStartElapsed = newStart;
+    t.go = false; // arm the "go" beep for the next lap's prep
     if (isFinished(t)) stopTimer(t);
     return true;
   }
@@ -698,6 +726,18 @@
   }
   function stopAll() { timers.forEach(stopTimer); saveTimers(); render(); }
   function resetAll() { timers.forEach(resetTimer); saveTimers(); render(); }
+
+  // Spacebar: pause everything that's running; press again to resume the ones
+  // that were in progress (doesn't start never-started timers).
+  function togglePauseAll() {
+    unlockAudio();
+    if (timers.some(t => t.startedAt)) {
+      timers.forEach(stopTimer);
+    } else {
+      timers.forEach(t => { if (!isFinished(t) && isActive(t)) startTimer(t); });
+    }
+    saveTimers(); render();
+  }
 
   // ---- Wall display mode ----
   // Pick the column/row split that makes the timer cells as large as possible
@@ -826,7 +866,7 @@
     timers.forEach(t => {
       if (!t.startedAt || isFinished(t)) return;
       const def = lapDefs[t.currentLap];
-      if (def && def.duration && currentLapElapsed(t) >= def.duration) {
+      if (def && def.duration && currentLapElapsed(t) >= prepMs + def.duration) {
         const finishedName = def.name;
         advanceLap(t, true);
         const done = isFinished(t);
@@ -840,6 +880,16 @@
       alarms.forEach(a => announce(a.timerName, a.finishedName, a.nextName, a.done, true));
     }
     return changed;
+  }
+
+  // Beep the moment a timer's get-ready pause ends and the lap actually starts.
+  function checkGo() {
+    if (prepMs <= 0) return;
+    timers.forEach(t => {
+      if (!t.startedAt || isFinished(t) || !lapDefs.length) return;
+      if (inPrep(t)) return;            // still in get-ready
+      if (!t.go) { t.go = true; beep(); }
+    });
   }
 
   // ---- Render: lap definitions ----
@@ -937,6 +987,12 @@
         card.appendChild(prog);
       }
 
+      if (hasLaps) {
+        const gr = document.createElement("div");
+        gr.className = "getready"; gr.dataset.getready = "1";
+        card.appendChild(gr);
+      }
+
       const time = document.createElement("div");
       time.className = "time"; time.dataset.time = "1";
       card.appendChild(time);
@@ -1021,21 +1077,28 @@
       const t = timers.find(x => x.id === id);
       if (!t) return;
       const def = curDef(t);
+      const prep = inPrep(t);
+      const cle = currentLapElapsed(t);
+      const grEl = card.querySelector('[data-getready]');
+      if (grEl) grEl.textContent = prep ? "Get ready" : "";
       const timeEl = card.querySelector('[data-time]');
       if (timeEl) {
         let shown, countdown = false;
-        if (def && def.duration) {
-          shown = Math.max(0, def.duration - currentLapElapsed(t));
+        if (prep) {
+          shown = prepRemaining(t);            // get-ready countdown
+        } else if (def && def.duration) {
+          shown = Math.max(0, def.duration - (cle - prepMs)); // lap countdown (after prep)
           countdown = true;
         } else if (hasLaps && !isFinished(t)) {
-          shown = currentLapElapsed(t);
+          shown = Math.max(0, cle - prepMs);   // manual lap counts up after prep
         } else {
           shown = elapsed(t);
         }
         const f = fmt(shown);
         timeEl.innerHTML = f.main + '<span class="ms">.' + f.ms + '</span>';
-        timeEl.classList.toggle("countdown", countdown && !!t.startedAt);
-        timeEl.classList.toggle("urgent", countdown && !!t.startedAt && shown <= 5000);
+        timeEl.classList.toggle("prep", prep);
+        timeEl.classList.toggle("countdown", !prep && countdown && !!t.startedAt);
+        timeEl.classList.toggle("urgent", !prep && countdown && !!t.startedAt && shown <= 5000);
       }
       const totalEl = card.querySelector('[data-total]');
       if (totalEl) totalEl.textContent = "Total: " + fmtStr(elapsed(t));
@@ -1065,6 +1128,7 @@
     const el = e.target;
     const tag = (el && el.tagName || "").toLowerCase();
     if (tag === "input" || tag === "select" || tag === "textarea" || (el && el.isContentEditable)) return;
+    if (e.key === " " || e.code === "Space") { e.preventDefault(); togglePauseAll(); return; } // pause / resume all
     const k = (e.key || "").toLowerCase();
     if (!k || k.length !== 1) return;
     const matches = timers.filter(t => String(t.key || "").toLowerCase() === k);
@@ -1090,6 +1154,17 @@
   document.getElementById("wallExitBtn").addEventListener("click", exitWall);
   document.getElementById("wallStartBtn").addEventListener("click", startAll);
   document.getElementById("wallStopBtn").addEventListener("click", stopAll);
+
+  // Get-ready pause setting
+  if (prepInput) prepInput.addEventListener("change", () => {
+    let v = Math.round(Number(prepInput.value));
+    if (isNaN(v) || v < 0) v = 0;
+    if (v > 60) v = 60;
+    prepInput.value = String(v);
+    prepMs = v * 1000;
+    try { localStorage.setItem(KEY_PREP, String(prepMs)); } catch (e) {}
+    render();
+  });
 
   // Voice picker
   populateVoices();
@@ -1124,10 +1199,12 @@
   setupToggle("lapToggle", "multiTimerDashboard.lapAddCollapsed");
   setupToggle("timerToggle", "multiTimerDashboard.timerAddCollapsed");
 
-  // Main loop: check timed laps, then repaint.
+  // Main loop: advance finished laps, fire the get-ready "go" beep, then repaint.
   setInterval(() => {
     if (!timers.some(t => t.startedAt)) return;
-    if (!checkAuto()) tick();
+    const advanced = checkAuto();
+    checkGo();
+    if (!advanced) tick();
   }, 33);
 
   render();
