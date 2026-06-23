@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soul Good Boxathon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Soul Good Boxing — Brand Book v1.0 palette */
+    --ink: #0E0F0D;
+    --bone: #F2EEE6;
+    --fog: #8A8A85;
+    --ember: #C2410C;
+    /* semantic mappings */
+    --bg: var(--ink);
+    --panel: #161714;
+    --panel-2: #1f201c;
+    --text: var(--bone);
+    --muted: var(--fog);
+    --accent: var(--ember);
+    --border: #2b2c27;
+    --font-display: "Archivo Black", "Space Grotesk", "Inter", sans-serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: radial-gradient(1200px 700px at 50% -15%, #17181400 0, var(--ink) 70%), var(--ink);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header { padding: 30px 24px 8px; text-align: center; }
+  .brand-logo {
+    display: block; height: 60px; width: auto; max-width: 86%;
+    margin: 0 auto 16px;
+    filter: brightness(0) invert(0.94);   /* black artwork → Bone for dark UI */
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 42px; line-height: 1;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--text);
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    color: var(--ember); font-size: 12px; font-weight: 500;
+    letter-spacing: 4px; text-transform: uppercase; margin-top: 12px;
+  }
+
+  .panel {
+    max-width: 1100px;
+    margin: 16px auto;
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .panel-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: .6px;
+    color: var(--muted); margin-bottom: 12px; font-weight: 700;
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  button.toggle {
+    background: transparent; border: none; padding: 0; cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;
+    color: var(--muted); display: inline-flex; align-items: center; gap: 8px;
+  }
+  button.toggle:hover { background: transparent; color: var(--text); }
+  button.toggle .caret { transition: transform .15s ease; font-size: 11px; }
+  button.toggle.collapsed .caret { transform: rotate(-90deg); }
+  .collapsible { margin-top: 14px; }
+  .collapsible.hidden { display: none; }
+  .global-controls { margin-top: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  input[type="text"] {
+    flex: 1 1 200px;
+    min-width: 140px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+  }
+  input.dur { flex: 0 1 150px; min-width: 110px; }
+  input[type="text"]:focus { border-color: var(--accent); }
+
+  select {
+    flex: 1 1 200px; min-width: 150px;
+    padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--panel-2);
+    color: var(--text); font-size: 15px; font-family: var(--font-body); outline: none; cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); }
+  select.voice { flex: 0 1 230px; font-size: 13px; padding: 8px 10px; }
+  button.danger:hover { color: var(--ember); border-color: var(--ember); background: transparent; }
+
+  button {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .05s ease, background .15s ease, opacity .15s ease;
+  }
+  button:hover { background: #26271f; }
+  button:active { transform: translateY(1px); }
+  button:disabled { cursor: default; opacity: .4; }
+  button.primary { background: var(--ember); border-color: var(--ember); color: var(--bone); }
+  button.primary:hover { background: #d24a12; }
+  button.start-all { background: var(--ember); border-color: var(--ember); color: var(--bone); }
+  button.start-all:hover { background: #d24a12; }
+  button.lap { background: transparent; border-color: var(--ember); color: var(--ember); }
+  button.lap:hover { background: rgba(194,65,12,.14); }
+  button.stop-all { background: transparent; border-color: var(--bone); color: var(--bone); }
+  button.stop-all:hover { background: rgba(242,238,230,.10); }
+  button.ghost { background: transparent; color: var(--fog); border-color: var(--border); }
+  button.ghost:hover { background: transparent; color: var(--bone); }
+
+  /* Lap definitions — big vertical list for clients to read */
+  .lap-defs { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .lap-item {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .lap-item .idx {
+    background: var(--ember); color: var(--bone);
+    font-family: var(--font-mono); font-size: 17px; font-weight: 700;
+    width: 40px; height: 40px; border-radius: 50%; flex: 0 0 40px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .lap-item .lap-name-big { flex: 1; font-size: 23px; font-weight: 700; word-break: break-word; }
+  .lap-item .dur-big {
+    background: rgba(194,65,12,.16); color: var(--ember);
+    border-radius: 10px; padding: 6px 14px; font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .lap-item .dur-big.none { background: transparent; color: var(--muted); font-weight: 500; font-size: 13px; font-style: normal; letter-spacing: 1px; text-transform: uppercase; }
+  .lap-item .x { border: none; background: transparent; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 6px; flex: 0 0 auto; }
+  .lap-item .x:hover { color: var(--ember); }
+  .lap-empty { color: var(--muted); font-size: 16px; font-style: italic; padding: 4px 0; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+  /* Timer grid */
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto 60px;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card.running { border-color: var(--ember); box-shadow: 0 0 0 1px rgba(194,65,12,.45), 0 0 22px rgba(194,65,12,.12); }
+  .card.done { border-color: var(--bone); box-shadow: 0 0 0 1px rgba(242,238,230,.18); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .name { font-size: 16px; font-weight: 700; word-break: break-word; letter-spacing: .3px; flex: 1 1 auto; }
+  .keycap-wrap { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; }
+  .keycap-wrap .lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+  input.keycap {
+    width: 30px; height: 30px; min-width: 0; flex: 0 0 auto;
+    text-align: center; padding: 0;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700; line-height: 1;
+    color: var(--bone); background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 7px; outline: none;
+  }
+  input.keycap:focus { border-color: var(--ember); }
+  .card.running input.keycap { border-color: var(--ember); color: var(--ember); }
+  .remove { background: transparent; border: none; color: var(--muted); font-size: 20px; line-height: 1; padding: 2px 6px; cursor: pointer; }
+  .remove:hover { color: var(--ember); }
+
+  .lap-banner {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .lap-banner .cur { font-weight: 600; }
+  .lap-banner .count { color: var(--muted); font-family: var(--font-mono); font-size: 11px; letter-spacing: .5px; white-space: nowrap; }
+  .card.done .lap-banner { color: var(--bone); }
+
+  .progress { height: 6px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+  .progress > span { display: block; height: 100%; background: var(--ember); transition: width .2s ease; }
+
+  .time {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 40px; font-weight: 700; letter-spacing: 0;
+    text-align: center; padding: 2px 0;
+  }
+  .time .ms { font-size: 20px; color: var(--muted); }
+  .time.countdown { color: var(--bone); }
+  .time.urgent { color: var(--ember); animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  .total-line { text-align: center; color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; margin-top: -6px; }
+
+  .status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 7px; }
+  .card.running .status-dot { background: var(--ember); box-shadow: 0 0 8px var(--ember); }
+  .card.done .status-dot { background: var(--bone); }
+
+  .card-actions { display: flex; gap: 8px; }
+  .card-actions button { flex: 1; padding: 10px; }
+
+  .laps {
+    margin: 0; max-height: 160px; overflow-y: auto;
+    border-top: 1px solid var(--border); padding-top: 10px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .laps-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+  .lap-row { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; font-size: 13px; padding: 4px 6px; border-radius: 6px; }
+  .lap-row:nth-child(even) { background: var(--panel-2); }
+  .lap-row .lap-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lap-row .lap-split { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+
+  .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 50px 20px; border: 1px dashed var(--border); border-radius: 16px; }
+
+  .sound-toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; cursor: pointer; user-select: none; }
+  .head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* ---- Wall display mode ---- */
+  .wall-bar { display: none; }
+  body.wall header, body.wall .panel { display: none; }
+  body.wall { background: var(--ink); }
+  body.wall .wall-bar {
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; z-index: 20;
+    padding: 14px 22px;
+    background: rgba(14,15,13,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .wall-bar .wb-logo { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 2px; font-size: 18px; color: var(--text); }
+  .wall-bar .wb-kicker { font-family: var(--font-mono); color: var(--ember); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+  .wall-bar .spacer { flex: 1; }
+  body.wall .grid {
+    max-width: none; margin: 22px auto 48px; padding: 0 22px; gap: 22px;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  }
+  body.wall .card { padding: 28px; gap: 18px; }
+  body.wall .name { font-size: 28px; }
+  body.wall .keycap-wrap .lbl { font-size: 11px; }
+  body.wall input.keycap { width: 46px; height: 46px; font-size: 22px; border-radius: 10px; }
+  body.wall .lap-banner { padding: 16px 20px; }
+  body.wall .lap-banner .cur { font-size: 30px; font-weight: 700; }
+  body.wall .lap-banner .count { font-size: 15px; }
+  body.wall .progress { height: 14px; }
+  body.wall .time { font-size: clamp(72px, 13vw, 170px); letter-spacing: -1px; }
+  body.wall .time .ms { font-size: .4em; }
+  body.wall .total-line { font-size: 17px; margin-top: 0; }
+  body.wall .card-actions button { padding: 16px; font-size: 17px; }
+  body.wall .laps { display: none; }   /* hide lap history to keep the wall clean */
+  body.wall .remove { font-size: 24px; }
+</style>
+</head>
+<body>
+  <!-- Wall display toolbar (only visible in wall mode) -->
+  <div class="wall-bar">
+    <span class="wb-logo">Boxathon</span>
+    <span class="wb-kicker">Breathe · Strike · Return</span>
+    <span class="spacer"></span>
+    <button class="start-all" id="wallStartBtn">▶ Start / Next (All)</button>
+    <button class="stop-all" id="wallStopBtn">⏸ Stop All</button>
+    <button class="ghost" id="wallExitBtn">⤢ Exit display</button>
+  </div>
+
+  <header>
+    <img class="brand-logo" src="data:image/png;base64,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" alt="Soul Good .Fit">
+    <h1>Boxathon</h1>
+    <div class="kicker">Breathe · Strike · Return</div>
+  </header>
+
+  <!-- Workout: save / load / reset -->
+  <div class="panel">
+    <div class="panel-head">
+      <button class="toggle" id="workoutToggle" data-target="workoutBox" aria-expanded="true">
+        <span class="caret">▼</span> Workout — save &amp; load programs
+      </button>
+      <button class="ghost danger" id="resetDashBtn">⟲ Reset dashboard</button>
+    </div>
+    <div class="collapsible" id="workoutBox">
+      <div class="row">
+        <select id="workoutSelect"><option value="">— Saved workouts —</option></select>
+        <button id="loadWorkoutBtn">Load</button>
+        <button class="ghost" id="deleteWorkoutBtn">Delete</button>
+      </div>
+      <div class="row">
+        <input type="text" id="workoutName" placeholder="Name this workout (e.g. Boxathon A)" maxlength="50" autocomplete="off">
+        <button class="primary" id="saveWorkoutBtn">Save workout</button>
+      </div>
+      <div class="row">
+        <button class="ghost" id="exportWorkoutBtn">⭳ Export to file</button>
+        <button class="ghost" id="importWorkoutBtn">⭱ Import from file</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+      </div>
+      <div class="hint">A workout = your lap program. Saved workouts live in this browser; use Export/Import to move them between devices.</div>
+    </div>
+  </div>
+
+  <!-- Lap definitions (top of page) -->
+  <div class="panel">
+    <div class="panel-head">
+      <button class="toggle" id="lapToggle" data-target="lapAdd" aria-expanded="true">
+        <span class="caret">▼</span> Laps — every timer steps through these
+      </button>
+      <div class="head-right">
+        <label class="sound-toggle"><input type="checkbox" id="soundChk" checked> 🔔 sound + voice</label>
+        <select id="voiceSelect" class="voice" title="Announcer voice"><option value="">Default voice</option></select>
+      </div>
+    </div>
+    <div class="collapsible" id="lapAdd">
+      <div class="row">
+        <input type="text" id="lapInput" placeholder="Lap name (e.g. Warm-up, Round 1)" maxlength="40" autocomplete="off">
+        <input type="text" id="lapDuration" class="dur" placeholder="⏲ time — 30 or 1:30" maxlength="10" autocomplete="off">
+        <button class="primary" id="addLapBtn">+ Add Lap</button>
+      </div>
+      <div class="hint">
+        Add a time to make a lap count down and auto-advance when it ends (leave blank for a manual lap).
+        Format: seconds (<code>45</code>) or mm:ss (<code>1:30</code>) or h:mm:ss.
+      </div>
+    </div>
+    <div class="lap-defs" id="lapDefs"></div>
+  </div>
+
+  <!-- Timer controls -->
+  <div class="panel">
+    <div class="panel-head">
+      <button class="toggle" id="timerToggle" data-target="timerAdd" aria-expanded="true">
+        <span class="caret">▼</span> Timers
+      </button>
+    </div>
+    <div class="collapsible" id="timerAdd">
+      <div class="row">
+        <input type="text" id="nameInput" placeholder="Timer name (e.g. Station 1)" maxlength="40" autocomplete="off">
+        <button class="primary" id="addBtn">+ Add Timer</button>
+      </div>
+      <div class="hint">Each timer gets a keyboard key (1, 2, 3… by default, editable top-right of each card). Press that key to advance that timer to its next lap — hands-free.</div>
+    </div>
+    <div class="row global-controls">
+      <button class="start-all" id="startAllBtn">▶ Start / Next Lap (All)</button>
+      <button class="stop-all" id="stopAllBtn">⏸ Stop All</button>
+      <button class="ghost" id="resetAllBtn">↺ Reset All</button>
+      <button class="ghost" id="wallBtn">⛶ Wall display</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const KEY_TIMERS = "multiTimerDashboard.timers.v3";
+  const KEY_LAPS = "multiTimerDashboard.lapDefs.v3";
+  const KEY_WORKOUTS = "multiTimerDashboard.workouts.v1";
+  const KEY_VOICE = "multiTimerDashboard.voiceURI";
+  const KEY_ORDER = ["1","2","3","4","5","6","7","8","9","0"];  // default hotkeys, in order
+
+  const grid = document.getElementById("grid");
+  const nameInput = document.getElementById("nameInput");
+  const lapInput = document.getElementById("lapInput");
+  const lapDuration = document.getElementById("lapDuration");
+  const lapDefsEl = document.getElementById("lapDefs");
+  const soundChk = document.getElementById("soundChk");
+  const voiceSelect = document.getElementById("voiceSelect");
+  const workoutSelect = document.getElementById("workoutSelect");
+  const workoutName = document.getElementById("workoutName");
+  const importFile = document.getElementById("importFile");
+
+  /**
+   * lapDefs: [{ name, duration (ms) | null }]  — shared, shown at top.
+   * timers: {
+   *   id, name, accumulated, startedAt,
+   *   currentLap, lapStartElapsed, lapTimes:[{name, ms}]
+   * }
+   */
+  let lapDefs = loadLapDefs();
+  let timers = migrateTimers(loadJSON(KEY_TIMERS, []));
+  let nextId = timers.reduce((m, t) => Math.max(m, t.id), 0) + 1;
+  let workouts = loadObj(KEY_WORKOUTS, {});
+  let selectedVoiceURI = ""; try { selectedVoiceURI = localStorage.getItem(KEY_VOICE) || ""; } catch (e) {}
+
+  function loadJSON(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : fallback;
+    } catch (e) { return fallback; }
+  }
+  function loadObj(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const data = JSON.parse(raw);
+      return data && typeof data === "object" && !Array.isArray(data) ? data : fallback;
+    } catch (e) { return fallback; }
+  }
+  function saveWorkoutsStore() { try { localStorage.setItem(KEY_WORKOUTS, JSON.stringify(workouts)); } catch (e) {} }
+  function loadLapDefs() {
+    return loadJSON(KEY_LAPS, []).map(d =>
+      typeof d === "string" ? { name: d, duration: null }
+                            : { name: d.name, duration: d.duration || null });
+  }
+  function migrateTimers(arr) {
+    return arr.map((t, i) => ({
+      id: t.id, name: t.name,
+      accumulated: t.accumulated || 0,
+      startedAt: t.startedAt || null,
+      currentLap: t.currentLap || 0,
+      lapStartElapsed: t.lapStartElapsed || 0,
+      lapTimes: Array.isArray(t.lapTimes) ? t.lapTimes : [],
+      key: t.key != null ? String(t.key) : (KEY_ORDER[i] || "")
+    }));
+  }
+  function nextFreeKey() {
+    const used = new Set(timers.map(t => String(t.key || "")));
+    for (const k of KEY_ORDER) if (!used.has(k)) return k;
+    return "";
+  }
+  function saveTimers() { try { localStorage.setItem(KEY_TIMERS, JSON.stringify(timers)); } catch (e) {} }
+  function saveLaps() { try { localStorage.setItem(KEY_LAPS, JSON.stringify(lapDefs)); } catch (e) {} }
+
+  // ---- Time helpers ----
+  function elapsed(t) { return t.accumulated + (t.startedAt ? Date.now() - t.startedAt : 0); }
+  function currentLapElapsed(t) { return elapsed(t) - t.lapStartElapsed; }
+  function isFinished(t) { return lapDefs.length > 0 && t.currentLap >= lapDefs.length; }
+  function curDef(t) { return lapDefs.length && !isFinished(t) ? lapDefs[t.currentLap] : null; }
+
+  function fmt(ms) {
+    if (ms < 0) ms = 0;
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    const cs = Math.floor((ms % 1000) / 10);
+    const pad = (n) => String(n).padStart(2, "0");
+    return { main: (h > 0 ? pad(h) + ":" : "") + pad(m) + ":" + pad(s), ms: pad(cs) };
+  }
+  function fmtStr(ms) { const f = fmt(ms); return f.main + "." + f.ms; }
+  function fmtClock(ms) { return fmt(ms).main; }
+
+  function parseDuration(str) {
+    str = (str || "").trim();
+    if (!str) return null;
+    if (str.indexOf(":") >= 0) {
+      const parts = str.split(":").map(p => Number(p));
+      if (parts.some(p => isNaN(p) || p < 0)) return null;
+      let s = 0; parts.forEach(p => { s = s * 60 + p; });
+      return s > 0 ? Math.round(s * 1000) : null;
+    }
+    const n = Number(str);
+    if (isNaN(n) || n <= 0) return null;
+    return Math.round(n * 1000); // bare number = seconds
+  }
+
+  // ---- Audio / voice ----
+  const hasSpeech = typeof window !== "undefined" && "speechSynthesis" in window;
+  let audioCtx = null;
+  let speechPrimed = false;
+
+  // Some browsers populate voices asynchronously — keep them warm and refresh the picker.
+  if (hasSpeech) {
+    try { window.speechSynthesis.getVoices(); } catch (e) {}
+    try { window.speechSynthesis.onvoiceschanged = function () { try { window.speechSynthesis.getVoices(); } catch (e) {} populateVoices(); }; } catch (e) {}
+  }
+  function getVoices() { try { return window.speechSynthesis.getVoices() || []; } catch (e) { return []; } }
+  function populateVoices() {
+    if (!hasSpeech || !voiceSelect) return;
+    const vs = getVoices();
+    voiceSelect.innerHTML = "";
+    const def = document.createElement("option");
+    def.value = ""; def.textContent = "Default voice";
+    voiceSelect.appendChild(def);
+    vs.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v.voiceURI; o.textContent = v.name + " — " + v.lang;
+      voiceSelect.appendChild(o);
+    });
+    if (selectedVoiceURI) voiceSelect.value = selectedVoiceURI;
+  }
+  function chosenVoice() {
+    const vs = getVoices();
+    if (selectedVoiceURI) { const f = vs.find(v => v.voiceURI === selectedVoiceURI); if (f) return f; }
+    return pickVoice();
+  }
+
+  function unlockAudio() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    } catch (e) {}
+    // Speech engines must be "primed" by a real user gesture before they will
+    // speak programmatically later — do it once on the first click.
+    if (hasSpeech && !speechPrimed) {
+      try {
+        const u = new SpeechSynthesisUtterance(" ");
+        u.volume = 0;
+        window.speechSynthesis.resume();
+        window.speechSynthesis.speak(u);
+        speechPrimed = true;
+      } catch (e) {}
+    }
+  }
+  function beep() {
+    if (!soundChk.checked) return;
+    try {
+      unlockAudio();
+      const now = audioCtx.currentTime;
+      [0, 0.18].forEach((offset, i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.type = "sine";
+        o.frequency.value = i === 0 ? 880 : 1175;
+        const start = now + offset;
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.exponentialRampToValueAtTime(0.5, start + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.15);
+        o.start(start); o.stop(start + 0.16);
+      });
+    } catch (e) {}
+  }
+  function pickVoice() {
+    try {
+      const vs = window.speechSynthesis.getVoices() || [];
+      return vs.find(v => /^en(-|_|$)/i.test(v.lang)) || vs[0] || null;
+    } catch (e) { return null; }
+  }
+  function speak(text, force) {
+    if ((!soundChk.checked && !force) || !hasSpeech) return;
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1; u.volume = 1; u.lang = "en-US";
+      const v = chosenVoice();
+      if (v) { u.voice = v; if (v.lang) u.lang = v.lang; }
+      window.speechSynthesis.resume();   // Chrome can leave the queue paused
+      window.speechSynthesis.speak(u);   // queue (don't cancel) so multiple timers each get announced
+    } catch (e) {}
+  }
+  // Announce a lap change. withBeep = the double tone (used when a timed lap auto-ends).
+  function announce(timerName, finishedName, nextName, done, withBeep) {
+    if (withBeep) beep();
+    let msg = (timerName ? timerName + ": " : "") + finishedName + " done";
+    if (done) msg += ". Workout complete";
+    else if (nextName) msg += ". Next, " + nextName;
+    speak(msg);
+  }
+
+  // ---- Lap definitions ----
+  function addLapDef() {
+    const name = lapInput.value.trim() || ("Lap " + (lapDefs.length + 1));
+    const duration = parseDuration(lapDuration.value);
+    lapDefs.push({ name, duration });
+    lapInput.value = ""; lapDuration.value = "";
+    lapInput.focus();
+    saveLaps(); render();
+  }
+  function removeLapDef(index) { lapDefs.splice(index, 1); saveLaps(); render(); }
+
+  // ---- Timer actions ----
+  function addTimer() {
+    const name = nameInput.value.trim() || ("Timer " + nextId);
+    timers.push({ id: nextId++, name, accumulated: 0, startedAt: null, currentLap: 0, lapStartElapsed: 0, lapTimes: [], key: nextFreeKey() });
+    nameInput.value = ""; nameInput.focus();
+    saveTimers(); render();
+  }
+  function startTimer(t) { if (!isFinished(t) && !t.startedAt) t.startedAt = Date.now(); }
+  function stopTimer(t) { if (t.startedAt) { t.accumulated += Date.now() - t.startedAt; t.startedAt = null; } }
+
+  // Record current lap and advance. `auto` rolls the clock by the exact lap
+  // duration (drift-free); manual advance records the real elapsed time.
+  function advanceLap(t, auto) {
+    if (!t.startedAt || isFinished(t) || lapDefs.length === 0) return false;
+    const def = lapDefs[t.currentLap];
+    const name = def.name || ("Lap " + (t.currentLap + 1));
+    let split, newStart;
+    if (auto && def.duration) {
+      split = def.duration;
+      newStart = t.lapStartElapsed + def.duration;
+    } else {
+      split = currentLapElapsed(t);
+      newStart = elapsed(t);
+    }
+    t.lapTimes.push({ name, ms: split });
+    t.currentLap += 1;
+    t.lapStartElapsed = newStart;
+    if (isFinished(t)) stopTimer(t);
+    return true;
+  }
+
+  function startOrNext(id) {
+    const t = timers.find(x => x.id === id);
+    if (!t || isFinished(t)) return;
+    if (t.startedAt) {
+      const def = lapDefs[t.currentLap];
+      const finishedName = def ? def.name : "";
+      if (advanceLap(t, false)) {
+        const done = isFinished(t);
+        announce(t.name, finishedName, done ? null : lapDefs[t.currentLap].name, done, false);
+      }
+    } else {
+      startTimer(t);
+    }
+    saveTimers(); render();
+  }
+  function stopOne(id) { const t = timers.find(x => x.id === id); if (t) { stopTimer(t); saveTimers(); render(); } }
+  function resetTimer(t) { t.accumulated = 0; t.startedAt = null; t.currentLap = 0; t.lapStartElapsed = 0; t.lapTimes = []; }
+  function resetOne(id) { const t = timers.find(x => x.id === id); if (t) { resetTimer(t); saveTimers(); render(); } }
+  function removeTimer(id) { timers = timers.filter(x => x.id !== id); saveTimers(); render(); }
+
+  // Start All = advance every timer one lap. Fresh/stopped timers start (→ lap 1
+  // if untouched, or resume their current lap); running timers move to the next lap.
+  function startAll() {
+    unlockAudio();
+    const ann = [];
+    timers.forEach(t => {
+      if (t.startedAt) {
+        const def = lapDefs[t.currentLap];
+        const finishedName = def ? def.name : "";
+        if (advanceLap(t, false)) {
+          const done = isFinished(t);
+          ann.push({ name: t.name, finishedName, nextName: done ? null : lapDefs[t.currentLap].name, done });
+        }
+      } else {
+        startTimer(t);
+      }
+    });
+    saveTimers(); render();
+    // If every timer advanced to the same place (the usual case), announce once
+    // without names; otherwise announce each timer.
+    if (ann.length) {
+      const uniq = new Set(ann.map(a => a.done ? "__DONE__" : a.nextName));
+      if (uniq.size === 1) { const a = ann[0]; announce(null, a.finishedName, a.nextName, a.done, false); }
+      else ann.forEach(a => announce(a.name, a.finishedName, a.nextName, a.done, false));
+    }
+  }
+  function stopAll() { timers.forEach(stopTimer); saveTimers(); render(); }
+  function resetAll() { timers.forEach(resetTimer); saveTimers(); render(); }
+
+  // ---- Wall display mode ----
+  function enterWall() {
+    document.body.classList.add("wall");
+    try { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  function exitWall() {
+    document.body.classList.remove("wall");
+    try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {}); } catch (e) {}
+  }
+
+  function resetDashboard() {
+    if (!confirm("Reset the dashboard? This clears all laps and timers. Saved workouts are kept.")) return;
+    timers = []; lapDefs = []; nextId = 1;
+    saveTimers(); saveLaps(); render();
+  }
+
+  // ---- Workouts (save / load / export / import) ----
+  function cloneLaps(arr) { return (arr || []).map(d => ({ name: d.name, duration: d.duration || null })); }
+  function refreshWorkoutSelect() {
+    if (!workoutSelect) return;
+    const names = Object.keys(workouts).sort((a, b) => a.localeCompare(b));
+    const keep = workoutSelect.value;
+    workoutSelect.innerHTML = "";
+    const ph = document.createElement("option");
+    ph.value = ""; ph.textContent = names.length ? "— Saved workouts —" : "— No saved workouts —";
+    workoutSelect.appendChild(ph);
+    names.forEach(n => {
+      const o = document.createElement("option");
+      o.value = n; o.textContent = n + " (" + workouts[n].length + " laps)";
+      workoutSelect.appendChild(o);
+    });
+    if (keep && workouts[keep]) workoutSelect.value = keep;
+  }
+  function saveWorkout() {
+    const name = (workoutName.value || "").trim();
+    if (!name) { workoutName.focus(); return; }
+    if (lapDefs.length === 0) { alert("Add some laps first, then save them as a workout."); return; }
+    if (workouts[name] && !confirm('Overwrite the saved workout "' + name + '"?')) return;
+    workouts[name] = cloneLaps(lapDefs);
+    saveWorkoutsStore(); refreshWorkoutSelect();
+    workoutName.value = ""; workoutSelect.value = name;
+  }
+  function loadWorkout() {
+    const name = workoutSelect.value;
+    if (!name || !workouts[name]) return;
+    if (lapDefs.length && !confirm('Load "' + name + '"? This replaces the current lap list.')) return;
+    lapDefs = cloneLaps(workouts[name]);
+    saveLaps(); render();
+  }
+  function deleteWorkout() {
+    const name = workoutSelect.value;
+    if (!name || !workouts[name]) return;
+    if (!confirm('Delete the saved workout "' + name + '"?')) return;
+    delete workouts[name];
+    saveWorkoutsStore(); refreshWorkoutSelect();
+  }
+  function exportWorkout() {
+    const name = ((workoutName.value || workoutSelect.value || "boxathon-workout").trim()) || "boxathon-workout";
+    const data = { app: "Soul Good Boxathon", version: 1, name: name, laps: cloneLaps(lapDefs) };
+    try {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = name.replace(/[^a-z0-9-_]+/gi, "_") + ".json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) { alert("Export failed in this browser."); }
+  }
+  function importWorkout(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const raw = Array.isArray(data) ? data : (data && Array.isArray(data.laps) ? data.laps : null);
+        if (!raw) throw new Error("no laps");
+        lapDefs = raw.map(d => typeof d === "string"
+          ? { name: d, duration: null }
+          : { name: String(d.name || "Lap"), duration: d.duration || null });
+        saveLaps();
+        if (data && data.name) {
+          workouts[data.name] = cloneLaps(lapDefs);
+          saveWorkoutsStore(); refreshWorkoutSelect(); workoutSelect.value = data.name;
+        }
+        render();
+      } catch (e) { alert("Could not read that file — make sure it's a Boxathon workout JSON."); }
+    };
+    reader.readAsText(file);
+  }
+
+  // Auto-advance timed laps whose time is up. Returns true if anything changed.
+  function checkAuto() {
+    let changed = false;
+    const alarms = [];
+    timers.forEach(t => {
+      if (!t.startedAt || isFinished(t)) return;
+      const def = lapDefs[t.currentLap];
+      if (def && def.duration && currentLapElapsed(t) >= def.duration) {
+        const finishedName = def.name;
+        advanceLap(t, true);
+        const done = isFinished(t);
+        alarms.push({ timerName: t.name, finishedName, nextName: done ? null : lapDefs[t.currentLap].name, done });
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveTimers();
+      render();
+      alarms.forEach(a => announce(a.timerName, a.finishedName, a.nextName, a.done, true));
+    }
+    return changed;
+  }
+
+  // ---- Render: lap definitions ----
+  function renderLapDefs() {
+    lapDefsEl.innerHTML = "";
+    if (lapDefs.length === 0) {
+      const e = document.createElement("div");
+      e.className = "lap-empty";
+      e.textContent = "No laps defined — add laps above, or timers will just run as plain stopwatches.";
+      lapDefsEl.appendChild(e);
+      return;
+    }
+    lapDefs.forEach((def, i) => {
+      const item = document.createElement("div");
+      item.className = "lap-item";
+      const idx = document.createElement("span");
+      idx.className = "idx"; idx.textContent = (i + 1);
+      const label = document.createElement("span");
+      label.className = "lap-name-big"; label.textContent = def.name;
+      const dur = document.createElement("span");
+      if (def.duration) { dur.className = "dur-big"; dur.textContent = "⏲ " + fmtClock(def.duration); }
+      else { dur.className = "dur-big none"; dur.textContent = "manual"; }
+      const x = document.createElement("button");
+      x.className = "x"; x.title = "Remove lap"; x.textContent = "✕";
+      x.addEventListener("click", () => removeLapDef(i));
+      item.appendChild(idx); item.appendChild(label); item.appendChild(dur); item.appendChild(x);
+      lapDefsEl.appendChild(item);
+    });
+  }
+
+  // ---- Render: timers ----
+  function render() {
+    renderLapDefs();
+    grid.innerHTML = "";
+
+    if (timers.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No timers yet. Add one above to get started.";
+      grid.appendChild(empty);
+      return;
+    }
+
+    const hasLaps = lapDefs.length > 0;
+
+    timers.forEach(t => {
+      const running = !!t.startedAt;
+      const finished = isFinished(t);
+      const card = document.createElement("div");
+      card.className = "card" + (running ? " running" : "") + (finished ? " done" : "");
+      card.dataset.id = t.id;
+
+      const head = document.createElement("div");
+      head.className = "card-head";
+      const name = document.createElement("div");
+      name.className = "name";
+      name.innerHTML = '<span class="status-dot"></span>' + escapeHtml(t.name);
+      const keyWrap = document.createElement("label");
+      keyWrap.className = "keycap-wrap";
+      keyWrap.title = "Keyboard key — press it to advance this timer to the next lap";
+      const keyLbl = document.createElement("span");
+      keyLbl.className = "lbl"; keyLbl.textContent = "key";
+      const keyInp = document.createElement("input");
+      keyInp.className = "keycap"; keyInp.type = "text"; keyInp.maxLength = 1;
+      keyInp.value = t.key || ""; keyInp.placeholder = "–";
+      keyInp.addEventListener("input", () => { t.key = keyInp.value.trim(); saveTimers(); });
+      keyInp.addEventListener("keydown", e => e.stopPropagation()); // typing here shouldn't fire hotkeys
+      keyWrap.appendChild(keyLbl); keyWrap.appendChild(keyInp);
+
+      const remove = document.createElement("button");
+      remove.className = "remove"; remove.title = "Remove timer"; remove.textContent = "✕";
+      remove.addEventListener("click", () => removeTimer(t.id));
+      head.appendChild(name); head.appendChild(keyWrap); head.appendChild(remove);
+      card.appendChild(head);
+
+      if (hasLaps) {
+        const def = lapDefs[t.currentLap];
+        const banner = document.createElement("div");
+        banner.className = "lap-banner";
+        const cur = document.createElement("span");
+        cur.className = "cur";
+        if (finished) cur.textContent = "✓ All laps complete";
+        else cur.textContent = "Lap " + (t.currentLap + 1) + ": " + def.name + (def.duration ? "  (⏲ " + fmtClock(def.duration) + ")" : "");
+        const count = document.createElement("span");
+        count.className = "count";
+        count.textContent = t.currentLap + " / " + lapDefs.length + " done";
+        banner.appendChild(cur); banner.appendChild(count);
+        card.appendChild(banner);
+
+        const prog = document.createElement("div");
+        prog.className = "progress";
+        const bar = document.createElement("span");
+        bar.style.width = ((t.currentLap / lapDefs.length) * 100) + "%";
+        prog.appendChild(bar);
+        card.appendChild(prog);
+      }
+
+      const time = document.createElement("div");
+      time.className = "time"; time.dataset.time = "1";
+      card.appendChild(time);
+
+      if (hasLaps) {
+        const total = document.createElement("div");
+        total.className = "total-line"; total.dataset.total = "1";
+        card.appendChild(total);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+      if (!finished) {
+        const startBtn = document.createElement("button");
+        if (running && hasLaps) {
+          startBtn.className = "lap";
+          startBtn.textContent = (t.currentLap === lapDefs.length - 1) ? "Finish Lap" : "Next Lap";
+          startBtn.title = "Record this lap and move to the next";
+        } else if (running) {
+          startBtn.className = "start-all"; startBtn.textContent = "Running…"; startBtn.disabled = true;
+        } else {
+          startBtn.className = "start-all";
+          startBtn.textContent = (t.currentLap > 0) ? "Resume" : "Start";
+        }
+        startBtn.addEventListener("click", () => startOrNext(t.id));
+        actions.appendChild(startBtn);
+
+        const stopBtn = document.createElement("button");
+        stopBtn.className = "stop-all"; stopBtn.textContent = "Stop"; stopBtn.disabled = !running;
+        stopBtn.addEventListener("click", () => stopOne(t.id));
+        actions.appendChild(stopBtn);
+      }
+      const reset = document.createElement("button");
+      reset.className = "ghost"; reset.textContent = "Reset";
+      reset.addEventListener("click", () => resetOne(t.id));
+      actions.appendChild(reset);
+      card.appendChild(actions);
+
+      if (t.lapTimes.length) {
+        const laps = document.createElement("div");
+        laps.className = "laps";
+        const title = document.createElement("div");
+        title.className = "laps-title"; title.textContent = "Completed laps";
+        laps.appendChild(title);
+        for (let i = t.lapTimes.length - 1; i >= 0; i--) {
+          const lt = t.lapTimes[i];
+          const r = document.createElement("div");
+          r.className = "lap-row";
+          r.innerHTML = '<span class="lap-name">' + (i + 1) + '. ' + escapeHtml(lt.name) + '</span>' +
+                        '<span class="lap-split">' + fmtStr(lt.ms) + '</span>';
+          laps.appendChild(r);
+        }
+        card.appendChild(laps);
+      }
+
+      grid.appendChild(card);
+    });
+
+    tick();
+  }
+
+  function tick() {
+    const hasLaps = lapDefs.length > 0;
+    grid.querySelectorAll(".card").forEach(card => {
+      const id = Number(card.dataset.id);
+      const t = timers.find(x => x.id === id);
+      if (!t) return;
+      const def = curDef(t);
+      const timeEl = card.querySelector('[data-time]');
+      if (timeEl) {
+        let shown, countdown = false;
+        if (def && def.duration) {
+          shown = Math.max(0, def.duration - currentLapElapsed(t));
+          countdown = true;
+        } else if (hasLaps && !isFinished(t)) {
+          shown = currentLapElapsed(t);
+        } else {
+          shown = elapsed(t);
+        }
+        const f = fmt(shown);
+        timeEl.innerHTML = f.main + '<span class="ms">.' + f.ms + '</span>';
+        timeEl.classList.toggle("countdown", countdown && !!t.startedAt);
+        timeEl.classList.toggle("urgent", countdown && !!t.startedAt && shown <= 5000);
+      }
+      const totalEl = card.querySelector('[data-total]');
+      if (totalEl) totalEl.textContent = "Total: " + fmtStr(elapsed(t));
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+
+  // ---- Wire up ----
+  document.addEventListener("click", unlockAudio);
+  document.getElementById("addLapBtn").addEventListener("click", addLapDef);
+  lapInput.addEventListener("keydown", e => { if (e.key === "Enter") addLapDef(); });
+  lapDuration.addEventListener("keydown", e => { if (e.key === "Enter") addLapDef(); });
+
+  document.getElementById("addBtn").addEventListener("click", addTimer);
+  document.getElementById("startAllBtn").addEventListener("click", startAll);
+  document.getElementById("stopAllBtn").addEventListener("click", stopAll);
+  document.getElementById("resetAllBtn").addEventListener("click", resetAll);
+  nameInput.addEventListener("keydown", e => { if (e.key === "Enter") addTimer(); });
+
+  // Global hotkeys: press a timer's key to advance it to the next lap.
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && document.body.classList.contains("wall")) { exitWall(); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const el = e.target;
+    const tag = (el && el.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "select" || tag === "textarea" || (el && el.isContentEditable)) return;
+    const k = (e.key || "").toLowerCase();
+    if (!k || k.length !== 1) return;
+    const matches = timers.filter(t => String(t.key || "").toLowerCase() === k);
+    if (!matches.length) return;
+    e.preventDefault();
+    unlockAudio();
+    matches.forEach(t => startOrNext(t.id));
+  });
+
+  // Workout save/load/export/import + reset dashboard
+  document.getElementById("saveWorkoutBtn").addEventListener("click", saveWorkout);
+  document.getElementById("loadWorkoutBtn").addEventListener("click", loadWorkout);
+  document.getElementById("deleteWorkoutBtn").addEventListener("click", deleteWorkout);
+  document.getElementById("exportWorkoutBtn").addEventListener("click", exportWorkout);
+  document.getElementById("importWorkoutBtn").addEventListener("click", () => importFile.click());
+  importFile.addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) importWorkout(f); importFile.value = ""; });
+  document.getElementById("resetDashBtn").addEventListener("click", resetDashboard);
+  workoutName.addEventListener("keydown", e => { if (e.key === "Enter") saveWorkout(); });
+  refreshWorkoutSelect();
+
+  // Wall display
+  document.getElementById("wallBtn").addEventListener("click", enterWall);
+  document.getElementById("wallExitBtn").addEventListener("click", exitWall);
+  document.getElementById("wallStartBtn").addEventListener("click", startAll);
+  document.getElementById("wallStopBtn").addEventListener("click", stopAll);
+
+  // Voice picker
+  populateVoices();
+  if (voiceSelect) voiceSelect.addEventListener("change", () => {
+    selectedVoiceURI = voiceSelect.value;
+    try { localStorage.setItem(KEY_VOICE, selectedVoiceURI); } catch (e) {}
+    unlockAudio();
+    speak("Soul Good Boxathon", true); // sample the chosen voice
+  });
+
+  // ---- Collapsible sections ---- (set up last; storage access is sandbox-safe)
+  function setupToggle(btnId, key) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    const apply = (collapsed) => {
+      target.classList.toggle("hidden", collapsed);
+      btn.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+    };
+    let saved = null;
+    try { saved = localStorage.getItem(key); } catch (e) {}
+    apply(saved === "1");
+    btn.addEventListener("click", () => {
+      const collapsed = !target.classList.contains("hidden");
+      apply(collapsed);
+      try { localStorage.setItem(key, collapsed ? "1" : "0"); } catch (e) {}
+    });
+  }
+  setupToggle("workoutToggle", "multiTimerDashboard.workoutCollapsed");
+  setupToggle("lapToggle", "multiTimerDashboard.lapAddCollapsed");
+  setupToggle("timerToggle", "multiTimerDashboard.timerAddCollapsed");
+
+  // Main loop: check timed laps, then repaint.
+  setInterval(() => {
+    if (!timers.some(t => t.startedAt)) return;
+    if (!checkAuto()) tick();
+  }, 33);
+
+  render();
+})();
+</script>
+</body>
+</html>
