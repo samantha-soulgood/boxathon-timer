@@ -571,6 +571,11 @@
     else if (nextName) msg += ". Next, " + nextName;
     speak(msg);
   }
+  // Announce the lap a timer is starting on (used when a stopped timer is started).
+  function announceStart(timerName, lapName) {
+    if (!lapName) return;
+    speak((timerName ? timerName + ": " : "") + lapName);
+  }
 
   // ---- Lap definitions ----
   function addLapDef() {
@@ -626,6 +631,10 @@
       }
     } else {
       startTimer(t);
+      if (t.startedAt) {
+        const def = lapDefs[t.currentLap];
+        announceStart(t.name, def ? def.name : null);
+      }
     }
     saveTimers(); render();
   }
@@ -638,7 +647,8 @@
   // if untouched, or resume their current lap); running timers move to the next lap.
   function startAll() {
     unlockAudio();
-    const ann = [];
+    const ann = [];      // timers that advanced (running → next lap)
+    const started = [];  // timers that just started (stopped → running)
     timers.forEach(t => {
       if (t.startedAt) {
         const def = lapDefs[t.currentLap];
@@ -649,11 +659,21 @@
         }
       } else {
         startTimer(t);
+        if (t.startedAt) {
+          const def = lapDefs[t.currentLap];
+          started.push({ name: t.name, lapName: def ? def.name : null });
+        }
       }
     });
     saveTimers(); render();
-    // If every timer advanced to the same place (the usual case), announce once
-    // without names; otherwise announce each timer.
+    // Starts: if everyone began on the same lap (the usual fresh Start All),
+    // announce that lap once; otherwise announce each.
+    if (started.length) {
+      const laps = new Set(started.map(s => s.lapName || ""));
+      if (laps.size === 1 && started[0].lapName) speak(started[0].lapName);
+      else started.forEach(s => announceStart(s.name, s.lapName));
+    }
+    // Advances: same idea — once if uniform, else per timer.
     if (ann.length) {
       const uniq = new Set(ann.map(a => a.done ? "__DONE__" : a.nextName));
       if (uniq.size === 1) { const a = ann[0]; announce(null, a.finishedName, a.nextName, a.done, false); }
