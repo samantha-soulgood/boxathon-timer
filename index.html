@@ -220,6 +220,10 @@
   .time.urgent { color: var(--ember); animation: pulse 1s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
   .total-line { text-align: center; color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; margin-top: -6px; }
+  .next-lap { text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .next-lap .nl-lbl { color: var(--ember); text-transform: uppercase; letter-spacing: 1px; font-size: .85em; }
+  .next-lap .nl-name { color: var(--text); font-weight: 700; }
+  .next-lap .nl-dur { color: var(--muted); font-variant-numeric: tabular-nums; }
 
   .status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 7px; }
   .card.running .status-dot { background: var(--ember); box-shadow: 0 0 8px var(--ember); }
@@ -287,6 +291,7 @@
   body.wall .progress { height: clamp(5px, 1.6cqh, 14px); }
   body.wall .time { font-size: min(26cqw, 40cqh); letter-spacing: -1px; line-height: 1; }
   body.wall .time .ms { font-size: .4em; }
+  body.wall .next-lap { font-size: clamp(11px, 4.5cqh, 24px); gap: 10px; }
 </style>
 </head>
 <body>
@@ -940,6 +945,21 @@
         const total = document.createElement("div");
         total.className = "total-line"; total.dataset.total = "1";
         card.appendChild(total);
+      }
+
+      // "Up next" — the lap that follows the current one
+      if (hasLaps && !finished) {
+        const nextLap = document.createElement("div");
+        nextLap.className = "next-lap";
+        const nextDef = lapDefs[t.currentLap + 1];
+        if (nextDef) {
+          nextLap.innerHTML = '<span class="nl-lbl">Next</span> ' +
+            '<span class="nl-name">' + escapeHtml(nextDef.name) + '</span>' +
+            (nextDef.duration ? ' <span class="nl-dur">' + fmtClock(nextDef.duration) + '</span>' : '');
+        } else {
+          nextLap.innerHTML = '<span class="nl-lbl">Last lap</span>';
+        }
+        card.appendChild(nextLap);
       }
 
       const actions = document.createElement("div");
