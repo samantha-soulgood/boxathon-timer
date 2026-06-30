@@ -151,8 +151,18 @@
     font-variant-numeric: tabular-nums; white-space: nowrap;
   }
   .lap-item .dur-big.none { background: transparent; color: var(--muted); font-weight: 500; font-size: 13px; font-style: normal; letter-spacing: 1px; text-transform: uppercase; }
-  .lap-item .x { border: none; background: transparent; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 6px; flex: 0 0 auto; }
-  .lap-item .x:hover { color: var(--ember); }
+  .lap-ctrls { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+  .lap-ctrl {
+    border: 1px solid transparent; background: transparent; color: var(--muted);
+    font-size: 16px; line-height: 1; cursor: pointer; padding: 6px 8px; border-radius: 8px;
+    flex: 0 0 auto;
+  }
+  .lap-ctrl:hover { color: var(--bone); background: var(--panel-2); }
+  .lap-ctrl:disabled { opacity: .3; cursor: default; background: transparent; color: var(--muted); }
+  .lap-ctrl.x:hover { color: var(--ember); }
+  .lap-ctrl.save { color: var(--ember); font-size: 18px; }
+  .lap-edit-name { flex: 1 1 auto; }
+  .lap-edit-dur { flex: 0 1 200px; min-width: 120px; }
   .lap-empty { color: var(--muted); font-size: 16px; font-style: italic; padding: 4px 0; }
   .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
 
@@ -301,6 +311,11 @@
   body.wall .time { font-size: min(26cqw, 40cqh); letter-spacing: -1px; line-height: 1; }
   body.wall .time .ms { font-size: .4em; }
   body.wall .next-lap { font-size: clamp(11px, 4.5cqh, 24px); gap: 10px; }
+  .runtoggle { display: none; }
+  body.wall .runtoggle {
+    display: block; width: 100%; margin-top: clamp(4px, 1.2cqh, 12px);
+    padding: clamp(7px, 2cqh, 16px); font-size: clamp(13px, 4.2cqh, 22px); border-radius: 12px;
+  }
 </style>
 </head>
 <body>
@@ -432,6 +447,7 @@
   let nextId = timers.reduce((m, t) => Math.max(m, t.id), 0) + 1;
   let workouts = loadObj(KEY_WORKOUTS, {});
   let selectedVoiceURI = ""; try { selectedVoiceURI = localStorage.getItem(KEY_VOICE) || ""; } catch (e) {}
+  let editingLapIndex = -1; // which lap is being edited inline (-1 = none)
   let prepMs = 5000; // get-ready pause before each lap (default 5s)
   try { const p = localStorage.getItem(KEY_PREP); if (p !== null && p !== "") prepMs = Math.max(0, Number(p)); } catch (e) {}
   if (isNaN(prepMs)) prepMs = 5000;
@@ -565,23 +581,40 @@
       } catch (e) {}
     }
   }
-  function beep() {
+  // Boxing-bell sound — metallic ring synthesized from inharmonic partials,
+  // struck twice ("ding-ding"). Self-contained, no audio file needed.
+  function bell() {
     if (!soundChk.checked) return;
     try {
       unlockAudio();
-      const now = audioCtx.currentTime;
-      [0, 0.18].forEach((offset, i) => {
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.connect(g); g.connect(audioCtx.destination);
-        o.type = "sine";
-        o.frequency.value = i === 0 ? 880 : 1175;
-        const start = now + offset;
-        g.gain.setValueAtTime(0.0001, start);
-        g.gain.exponentialRampToValueAtTime(0.5, start + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.15);
-        o.start(start); o.stop(start + 0.16);
-      });
+      const ctx = audioCtx;
+      const out = ctx.createGain();
+      out.gain.value = 0.9;
+      out.connect(ctx.destination);
+      // Inharmonic partials (ratio, level, decay seconds) give the bright metallic timbre.
+      const partials = [
+        { r: 1.00, g: 0.50, d: 1.4 },
+        { r: 2.74, g: 0.34, d: 1.1 },
+        { r: 4.07, g: 0.22, d: 0.9 },
+        { r: 5.43, g: 0.15, d: 0.7 },
+        { r: 6.79, g: 0.10, d: 0.5 }
+      ];
+      const strike = (t0, f0) => {
+        partials.forEach(p => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = "sine";
+          o.frequency.value = f0 * p.r;
+          g.gain.setValueAtTime(0.0001, t0);
+          g.gain.exponentialRampToValueAtTime(p.g, t0 + 0.004); // sharp strike
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + p.d); // long metallic ring
+          o.connect(g); g.connect(out);
+          o.start(t0); o.stop(t0 + p.d + 0.05);
+        });
+      };
+      const now = ctx.currentTime;
+      strike(now, 680);
+      strike(now + 0.26, 680); // second ding
     } catch (e) {}
   }
   function pickVoice() {
@@ -603,7 +636,7 @@
   }
   // Announce a lap change. withBeep = the double tone (used when a timed lap auto-ends).
   function announce(timerName, finishedName, nextName, done, withBeep) {
-    if (withBeep) beep();
+    if (withBeep) bell();
     let msg = (timerName ? timerName + ": " : "") + finishedName + " done";
     if (done) msg += ". Workout complete";
     else if (nextName) msg += ". Next, " + nextName;
@@ -624,7 +657,29 @@
     lapInput.focus();
     saveLaps(); render();
   }
-  function removeLapDef(index) { lapDefs.splice(index, 1); saveLaps(); render(); }
+  function removeLapDef(index) {
+    if (editingLapIndex === index) editingLapIndex = -1;
+    lapDefs.splice(index, 1);
+    saveLaps(); render();
+  }
+  // Edit an existing lap in place
+  function startEditLap(index) { editingLapIndex = index; renderLapDefs(); }
+  function cancelEditLap() { editingLapIndex = -1; renderLapDefs(); }
+  function saveEditLap(index, nameVal, durVal) {
+    const name = (nameVal || "").trim() || lapDefs[index].name || ("Lap " + (index + 1));
+    lapDefs[index] = { name, duration: parseDuration(durVal) };
+    editingLapIndex = -1;
+    saveLaps(); render();
+  }
+  // Reorder laps
+  function moveLapDef(index, dir) {
+    const j = index + dir;
+    if (j < 0 || j >= lapDefs.length) return;
+    const tmp = lapDefs[index]; lapDefs[index] = lapDefs[j]; lapDefs[j] = tmp;
+    if (editingLapIndex === index) editingLapIndex = j;
+    else if (editingLapIndex === j) editingLapIndex = index;
+    saveLaps(); render();
+  }
 
   // ---- Timer actions ----
   function addTimer() {
@@ -683,6 +738,19 @@
     saveTimers(); render();
   }
   function stopOne(id) { const t = timers.find(x => x.id === id); if (t) { stopTimer(t); saveTimers(); render(); } }
+  // Start/stop a single timer without advancing its lap (used on the wall display).
+  function toggleRunOne(id) {
+    const t = timers.find(x => x.id === id);
+    if (!t || isFinished(t)) return;
+    unlockAudio();
+    if (t.startedAt) {
+      stopTimer(t);
+    } else {
+      startTimer(t);
+      if (t.startedAt) { const def = lapDefs[t.currentLap]; announceStart(t.name, def ? def.name : null); }
+    }
+    saveTimers(); render();
+  }
   function resetTimer(t) { t.accumulated = 0; t.startedAt = null; t.currentLap = 0; t.lapStartElapsed = 0; t.lapTimes = []; }
   function resetOne(id) { const t = timers.find(x => x.id === id); if (t) { resetTimer(t); saveTimers(); render(); } }
   function removeTimer(id) { timers = timers.filter(x => x.id !== id); saveTimers(); render(); }
@@ -888,7 +956,7 @@
     timers.forEach(t => {
       if (!t.startedAt || isFinished(t) || !lapDefs.length) return;
       if (inPrep(t)) return;            // still in get-ready
-      if (!t.go) { t.go = true; beep(); }
+      if (!t.go) { t.go = true; bell(); }
     });
   }
 
@@ -907,15 +975,55 @@
       item.className = "lap-item";
       const idx = document.createElement("span");
       idx.className = "idx"; idx.textContent = (i + 1);
+      item.appendChild(idx);
+
+      if (editingLapIndex === i) {
+        // ---- inline edit form ----
+        const nameInp = document.createElement("input");
+        nameInp.type = "text"; nameInp.className = "lap-edit-name"; nameInp.maxLength = 40;
+        nameInp.value = def.name; nameInp.placeholder = "Lap name";
+        const durInp = document.createElement("input");
+        durInp.type = "text"; durInp.className = "lap-edit-dur"; durInp.maxLength = 10;
+        durInp.value = def.duration ? fmtClock(def.duration) : "";
+        durInp.placeholder = "⏲ time — blank = manual";
+        const save = document.createElement("button");
+        save.className = "lap-ctrl save"; save.title = "Save"; save.textContent = "✓";
+        save.addEventListener("click", () => saveEditLap(i, nameInp.value, durInp.value));
+        const cancel = document.createElement("button");
+        cancel.className = "lap-ctrl"; cancel.title = "Cancel"; cancel.textContent = "✕";
+        cancel.addEventListener("click", cancelEditLap);
+        nameInp.addEventListener("keydown", e => { if (e.key === "Enter") saveEditLap(i, nameInp.value, durInp.value); if (e.key === "Escape") cancelEditLap(); });
+        durInp.addEventListener("keydown", e => { if (e.key === "Enter") saveEditLap(i, nameInp.value, durInp.value); if (e.key === "Escape") cancelEditLap(); });
+        item.appendChild(nameInp); item.appendChild(durInp); item.appendChild(save); item.appendChild(cancel);
+        lapDefsEl.appendChild(item);
+        setTimeout(() => nameInp.focus(), 0);
+        return;
+      }
+
+      // ---- display row ----
       const label = document.createElement("span");
       label.className = "lap-name-big"; label.textContent = def.name;
       const dur = document.createElement("span");
       if (def.duration) { dur.className = "dur-big"; dur.textContent = "⏲ " + fmtClock(def.duration); }
       else { dur.className = "dur-big none"; dur.textContent = "manual"; }
+
+      const ctrls = document.createElement("div");
+      ctrls.className = "lap-ctrls";
+      const up = document.createElement("button");
+      up.className = "lap-ctrl"; up.title = "Move up"; up.textContent = "▲"; up.disabled = (i === 0);
+      up.addEventListener("click", () => moveLapDef(i, -1));
+      const down = document.createElement("button");
+      down.className = "lap-ctrl"; down.title = "Move down"; down.textContent = "▼"; down.disabled = (i === lapDefs.length - 1);
+      down.addEventListener("click", () => moveLapDef(i, 1));
+      const edit = document.createElement("button");
+      edit.className = "lap-ctrl"; edit.title = "Edit lap"; edit.textContent = "✎";
+      edit.addEventListener("click", () => startEditLap(i));
       const x = document.createElement("button");
-      x.className = "x"; x.title = "Remove lap"; x.textContent = "✕";
+      x.className = "lap-ctrl x"; x.title = "Remove lap"; x.textContent = "✕";
       x.addEventListener("click", () => removeLapDef(i));
-      item.appendChild(idx); item.appendChild(label); item.appendChild(dur); item.appendChild(x);
+      ctrls.appendChild(up); ctrls.appendChild(down); ctrls.appendChild(edit); ctrls.appendChild(x);
+
+      item.appendChild(label); item.appendChild(dur); item.appendChild(ctrls);
       lapDefsEl.appendChild(item);
     });
   }
@@ -1046,6 +1154,15 @@
       actions.appendChild(reset);
       card.appendChild(actions);
 
+      // Wall-display start/stop (shown only in wall mode, where card-actions are hidden)
+      if (!finished) {
+        const rt = document.createElement("button");
+        rt.className = "runtoggle " + (running ? "stop-all" : "start-all");
+        rt.textContent = running ? "⏸ Stop" : (isActive(t) ? "▶ Resume" : "▶ Start");
+        rt.addEventListener("click", () => toggleRunOne(t.id));
+        card.appendChild(rt);
+      }
+
       if (t.lapTimes.length) {
         const laps = document.createElement("div");
         laps.className = "laps";
@@ -1087,7 +1204,7 @@
         if (prep) {
           shown = prepRemaining(t);            // get-ready countdown
         } else if (def && def.duration) {
-          shown = Math.max(0, def.duration - (cle - prepMs)); // lap countdown (after prep)
+          shown = Math.max(0, def.duration - Math.max(0, cle - prepMs)); // lap countdown (after prep)
           countdown = true;
         } else if (hasLaps && !isFinished(t)) {
           shown = Math.max(0, cle - prepMs);   // manual lap counts up after prep
