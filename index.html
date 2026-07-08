@@ -164,6 +164,13 @@
   .lap-edit-name { flex: 1 1 auto; }
   .lap-edit-dur { flex: 0 1 200px; min-width: 120px; }
   .lap-empty { color: var(--muted); font-size: 16px; font-style: italic; padding: 4px 0; }
+  .lap-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; padding: 12px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; }
+  .lap-tools .sel-hint { color: var(--muted); font-size: 13px; }
+  .lap-tools .rep-lbl { color: var(--text); font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+  .lap-tools input { width: 58px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font-family: var(--font-mono); font-size: 14px; text-align: center; outline: none; }
+  .lap-tools input:focus { border-color: var(--ember); }
+  .lap-tools #repeatBtn { background: var(--ember); border-color: var(--ember); color: var(--bone); }
+  .lap-sel { width: 22px; height: 22px; flex: 0 0 auto; accent-color: var(--ember); cursor: pointer; }
   .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
 
   /* Timer grid */
@@ -385,6 +392,12 @@
         Format: seconds (<code>45</code>) or mm:ss (<code>1:30</code>) or h:mm:ss.
       </div>
     </div>
+    <div class="lap-tools" id="lapTools" style="display:none">
+      <span class="sel-hint" id="selHint">Tick laps above, then</span>
+      <label class="rep-lbl">repeat <input type="number" id="repeatCount" min="2" max="99" step="1" value="2"> ×</label>
+      <button id="repeatBtn">⟲ Repeat selected</button>
+      <button class="ghost" id="clearSelBtn">Clear</button>
+    </div>
     <div class="lap-defs" id="lapDefs"></div>
   </div>
 
@@ -425,6 +438,9 @@
 
   const grid = document.getElementById("grid");
   const prepInput = document.getElementById("prepInput");
+  const lapTools = document.getElementById("lapTools");
+  const selHint = document.getElementById("selHint");
+  const repeatCount = document.getElementById("repeatCount");
   const nameInput = document.getElementById("nameInput");
   const lapInput = document.getElementById("lapInput");
   const lapDuration = document.getElementById("lapDuration");
@@ -678,6 +694,33 @@
     const tmp = lapDefs[index]; lapDefs[index] = lapDefs[j]; lapDefs[j] = tmp;
     if (editingLapIndex === index) editingLapIndex = j;
     else if (editingLapIndex === j) editingLapIndex = index;
+    saveLaps(); render();
+  }
+  // Selection + repeat: duplicate the ticked laps (as a block) so they run N times total.
+  function selectedLapIndices() {
+    return Array.from(lapDefsEl.querySelectorAll(".lap-sel"))
+      .filter(b => b.checked).map(b => Number(b.dataset.i)).sort((a, b) => a - b);
+  }
+  function updateLapTools() {
+    if (!lapTools) return;
+    lapTools.style.display = lapDefs.length ? "flex" : "none";
+    const n = selectedLapIndices().length;
+    if (selHint) selHint.textContent = n ? (n + " lap" + (n === 1 ? "" : "s") + " selected —") : "Tick laps above, then";
+  }
+  function clearLapSelection() {
+    lapDefsEl.querySelectorAll(".lap-sel").forEach(b => { b.checked = false; });
+    updateLapTools();
+  }
+  function repeatSelected() {
+    const idxs = selectedLapIndices();
+    if (!idxs.length) { alert("Tick one or more laps first, then choose how many times to repeat."); return; }
+    let n = Math.round(Number(repeatCount.value));
+    if (isNaN(n) || n < 2) n = 2;
+    if (n > 99) n = 99;
+    const block = idxs.map(i => ({ name: lapDefs[i].name, duration: lapDefs[i].duration || null }));
+    const copies = [];
+    for (let r = 0; r < n - 1; r++) block.forEach(d => copies.push({ name: d.name, duration: d.duration }));
+    lapDefs.splice(idxs[idxs.length - 1] + 1, 0, ...copies); // insert after the last selected lap
     saveLaps(); render();
   }
 
@@ -968,6 +1011,7 @@
       e.className = "lap-empty";
       e.textContent = "No laps defined — add laps above, or timers will just run as plain stopwatches.";
       lapDefsEl.appendChild(e);
+      updateLapTools();
       return;
     }
     lapDefs.forEach((def, i) => {
@@ -1001,6 +1045,12 @@
       }
 
       // ---- display row ----
+      const sel = document.createElement("input");
+      sel.type = "checkbox"; sel.className = "lap-sel"; sel.dataset.i = i;
+      sel.title = "Select this lap to repeat";
+      sel.addEventListener("change", updateLapTools);
+      item.insertBefore(sel, idx); // checkbox to the left of the number badge
+
       const label = document.createElement("span");
       label.className = "lap-name-big"; label.textContent = def.name;
       const dur = document.createElement("span");
@@ -1026,6 +1076,7 @@
       item.appendChild(label); item.appendChild(dur); item.appendChild(ctrls);
       lapDefsEl.appendChild(item);
     });
+    updateLapTools();
   }
 
   // ---- Render: timers ----
@@ -1231,6 +1282,8 @@
   document.getElementById("addLapBtn").addEventListener("click", addLapDef);
   lapInput.addEventListener("keydown", e => { if (e.key === "Enter") addLapDef(); });
   lapDuration.addEventListener("keydown", e => { if (e.key === "Enter") addLapDef(); });
+  document.getElementById("repeatBtn").addEventListener("click", repeatSelected);
+  document.getElementById("clearSelBtn").addEventListener("click", clearLapSelection);
 
   document.getElementById("addBtn").addEventListener("click", addTimer);
   document.getElementById("startAllBtn").addEventListener("click", startAll);
