@@ -229,10 +229,10 @@
   .time {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 40px; font-weight: 700; letter-spacing: 0;
-    text-align: center; padding: 2px 0;
+    font-size: clamp(52px, 16vw, 72px); font-weight: 700; letter-spacing: -1px; line-height: 1;
+    text-align: center; padding: 4px 0;
   }
-  .time .ms { font-size: 20px; color: var(--muted); }
+  .time .ms { font-size: .4em; color: var(--muted); }
   .time.countdown { color: var(--bone); }
   .time.urgent { color: var(--ember); animation: pulse 1s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
