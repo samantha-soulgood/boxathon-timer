@@ -659,11 +659,14 @@
     } catch (e) {}
   }
   // Announce a lap change. withBeep = the double tone (used when a timed lap auto-ends).
+  // On a lap change, announce only what's next — not the lap that just finished.
   function announce(timerName, finishedName, nextName, done, withBeep) {
     if (withBeep) bell();
-    let msg = (timerName ? timerName + ": " : "") + finishedName + " done";
-    if (done) msg += ". Workout complete";
-    else if (nextName) msg += ". Next, " + nextName;
+    const prefix = timerName ? timerName + ": " : "";
+    let msg;
+    if (done) msg = prefix + "Workout complete";
+    else if (nextName) msg = prefix + nextName;
+    else return;
     speak(msg);
   }
   // Announce the lap a timer is starting on (used when a stopped timer is started).
