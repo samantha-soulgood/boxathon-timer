@@ -311,17 +311,25 @@
     width: clamp(24px, 8cqh, 46px); height: clamp(24px, 8cqh, 46px);
     font-size: clamp(12px, 4.5cqh, 22px); border-radius: 8px;
   }
+  /* Big, bold current lap */
   body.wall .lap-banner { padding: clamp(5px, 1.6cqh, 16px) clamp(8px, 2cqw, 20px); }
-  body.wall .lap-banner .cur { font-size: clamp(13px, 6cqh, 32px); font-weight: 700; }
+  body.wall .lap-banner .cur { font-size: clamp(15px, 7cqh, 38px); font-weight: 800; letter-spacing: .3px; }
   body.wall .lap-banner .count { font-size: clamp(9px, 3cqh, 15px); }
   body.wall .progress { height: clamp(5px, 1.6cqh, 14px); }
-  body.wall .time { font-size: min(26cqw, 40cqh); letter-spacing: -1px; line-height: 1; }
+  /* Big, bold time */
+  body.wall .time { font-size: min(24cqw, 36cqh); letter-spacing: -1px; line-height: 1; font-weight: 700; }
   body.wall .time .ms { font-size: .4em; }
-  body.wall .next-lap { font-size: clamp(11px, 4.5cqh, 24px); gap: 10px; }
-  .runtoggle { display: none; }
-  body.wall .runtoggle {
-    display: block; width: 100%; margin-top: clamp(4px, 1.2cqh, 12px);
-    padding: clamp(7px, 2cqh, 16px); font-size: clamp(13px, 4.2cqh, 22px); border-radius: 12px;
+  /* Smaller "up next" */
+  body.wall .next-lap { font-size: clamp(10px, 4cqh, 20px); gap: 10px; }
+  /* Per-timer controls: Next · Stop · Lap ↺ · Reset ⟲ */
+  .wall-actions { display: none; }
+  body.wall .wall-actions {
+    display: flex; gap: clamp(4px, 1cqw, 10px); margin-top: clamp(4px, 1.2cqh, 12px);
+  }
+  body.wall .wall-actions button {
+    flex: 1 1 0; min-width: 0;
+    padding: clamp(6px, 1.8cqh, 14px) 2px;
+    font-size: clamp(10px, 3.4cqh, 18px); border-radius: 10px;
   }
 </style>
 </head>
@@ -794,8 +802,16 @@
     }
     saveTimers(); render();
   }
-  function resetTimer(t) { t.accumulated = 0; t.startedAt = null; t.currentLap = 0; t.lapStartElapsed = 0; t.lapTimes = []; }
+  function resetTimer(t) { t.accumulated = 0; t.startedAt = null; t.currentLap = 0; t.lapStartElapsed = 0; t.lapTimes = []; t.go = false; }
   function resetOne(id) { const t = timers.find(x => x.id === id); if (t) { resetTimer(t); saveTimers(); render(); } }
+  // Reset only the CURRENT lap (restart it from its get-ready); keep completed laps.
+  function resetCurrentLap(t) {
+    if (isFinished(t)) return;
+    t.accumulated = t.lapStartElapsed; // roll total back to the start of this lap
+    if (t.startedAt) t.startedAt = Date.now();
+    t.go = false;                      // re-arm the get-ready "go" bell
+  }
+  function resetLapOne(id) { const t = timers.find(x => x.id === id); if (t) { resetCurrentLap(t); saveTimers(); render(); } }
   function removeTimer(id) { timers = timers.filter(x => x.id !== id); saveTimers(); render(); }
 
   // Start All = advance every timer one lap. Fresh/stopped timers start (→ lap 1
@@ -1205,14 +1221,38 @@
       actions.appendChild(reset);
       card.appendChild(actions);
 
-      // Wall-display start/stop (shown only in wall mode, where card-actions are hidden)
+      // Wall-display controls (shown only in wall mode, where card-actions are hidden):
+      // Next · Stop · Lap ↺ (current lap only) · Reset (whole workout).
+      const wactions = document.createElement("div");
+      wactions.className = "wall-actions";
       if (!finished) {
-        const rt = document.createElement("button");
-        rt.className = "runtoggle " + (running ? "stop-all" : "start-all");
-        rt.textContent = running ? "⏸ Stop" : (isActive(t) ? "▶ Resume" : "▶ Start");
-        rt.addEventListener("click", () => toggleRunOne(t.id));
-        card.appendChild(rt);
+        const nextBtn = document.createElement("button");
+        if (running) {
+          nextBtn.className = "lap";
+          nextBtn.textContent = (hasLaps && t.currentLap === lapDefs.length - 1) ? "Finish" : "Next";
+        } else {
+          nextBtn.className = "start-all";
+          nextBtn.textContent = isActive(t) ? "Resume" : "Start";
+        }
+        nextBtn.title = "Start / advance to the next lap";
+        nextBtn.addEventListener("click", () => startOrNext(t.id));
+        wactions.appendChild(nextBtn);
+
+        const stopBtn = document.createElement("button");
+        stopBtn.className = "stop-all"; stopBtn.textContent = "Stop"; stopBtn.disabled = !running;
+        stopBtn.addEventListener("click", () => stopOne(t.id));
+        wactions.appendChild(stopBtn);
+
+        const lapReset = document.createElement("button");
+        lapReset.className = "ghost"; lapReset.textContent = "Lap ↺"; lapReset.title = "Restart the current lap only";
+        lapReset.addEventListener("click", () => resetLapOne(t.id));
+        wactions.appendChild(lapReset);
       }
+      const wReset = document.createElement("button");
+      wReset.className = "ghost"; wReset.textContent = "Reset ⟲"; wReset.title = "Reset the whole workout for this timer";
+      wReset.addEventListener("click", () => resetOne(t.id));
+      wactions.appendChild(wReset);
+      card.appendChild(wactions);
 
       if (t.lapTimes.length) {
         const laps = document.createElement("div");
