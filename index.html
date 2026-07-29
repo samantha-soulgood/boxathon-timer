@@ -331,6 +331,47 @@
     padding: clamp(6px, 1.8cqh, 14px) 2px;
     font-size: clamp(10px, 3.4cqh, 18px); border-radius: 10px;
   }
+
+  /* Faster taps on touch devices; keep the page from scrolling sideways */
+  button, input, select { touch-action: manipulation; }
+  html, body { max-width: 100%; }
+
+  /* ---- Mobile / small screens ---- */
+  @media (max-width: 640px) {
+    header { padding: 18px 14px 4px; }
+    h1 { font-size: clamp(28px, 10vw, 42px); letter-spacing: 2px; }
+    .brand-logo { height: 46px; margin-bottom: 12px; }
+    .kicker { font-size: 10px; letter-spacing: 3px; }
+
+    .panel { margin: 12px; padding: 14px; border-radius: 14px; }
+    .grid { padding: 0 12px; gap: 12px; grid-template-columns: 1fr; }
+    .panel-head { gap: 10px; }
+    .head-right { gap: 10px; width: 100%; }
+    select.voice { flex: 1 1 100%; }
+
+    /* No iOS zoom-on-focus (inputs must be >= 16px) */
+    input[type="text"], input[type="number"], select { font-size: 16px; }
+
+    /* Lap rows: tighter, tappable, controls wrap under if needed */
+    .lap-item { gap: 10px; padding: 12px; flex-wrap: wrap; }
+    .lap-item .idx { width: 34px; height: 34px; flex: 0 0 34px; font-size: 15px; }
+    .lap-item .lap-name-big { font-size: 18px; flex: 1 1 120px; }
+    .lap-item .dur-big { font-size: 16px; padding: 5px 10px; }
+    .lap-ctrls { margin-left: auto; gap: 4px; }
+    .lap-ctrl { padding: 9px 11px; font-size: 18px; }
+    .lap-sel { width: 26px; height: 26px; }
+    .lap-edit-name, .lap-edit-dur { flex: 1 1 100%; }
+
+    /* Timer cards */
+    .card { padding: 16px; }
+    .card-actions { gap: 6px; flex-wrap: wrap; }
+    .card-actions button { padding: 12px 6px; }
+
+    /* Wall top bar wraps; controls drop to their own row */
+    .wall-bar { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+    .wall-bar .wb-kicker { display: none; }
+    .wall-bar .spacer { flex-basis: 100%; height: 0; }
+  }
 </style>
 </head>
 <body>
