@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Soul Good Boxathon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -290,7 +290,11 @@
   .wall-bar .spacer { flex: 1; }
   /* Wall fills the viewport; all timers fit with no scrolling. JS sets the
      column/row counts; each card scales its own contents via container queries. */
-  body.wall { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  body.wall {
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden;
+    /* keep content clear of the iPhone notch / status bar / home indicator */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
   body.wall .grid {
     flex: 1 1 auto; min-height: 0; overflow: hidden;
     max-width: none; margin: 0; padding: 14px; gap: 14px;
@@ -375,10 +379,13 @@
     .card-actions { gap: 6px; flex-wrap: wrap; }
     .card-actions button { padding: 12px 6px; }
 
-    /* Wall top bar wraps; controls drop to their own row */
-    .wall-bar { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+    /* Wall top bar: keep it compact so timers get the space */
+    .wall-bar { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
     .wall-bar .wb-kicker { display: none; }
-    .wall-bar .spacer { flex-basis: 100%; height: 0; }
+    .wall-bar .wb-logo { font-size: 14px; }
+    .wall-bar .spacer { display: none; }               /* let logo + buttons flow, no forced break */
+    .wall-bar .wb-logo { display: none; }              /* brand already on the setup screen; save the row */
+    .wall-bar button { padding: 8px 10px; font-size: 13px; flex: 1 1 auto; }
   }
 </style>
 </head>
