@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daddy Farewell — Cantonese + English Live Teleprompter</title>
+<style>
+:root { --zh: 42px; --en: 34px; }
+* { box-sizing:border-box; }
+body { margin:0; background:#080808; color:#fff; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Noto Sans HK",Arial,sans-serif; overflow:hidden; }
+#stage { height:100vh; display:flex; align-items:center; justify-content:center; padding:6vh 7vw 15vh; }
+.card { display:none; width:min(1250px,100%); text-align:center; }
+.card.active { display:block; }
+.zh { font-size:var(--zh); line-height:1.3; font-weight:700; text-wrap:balance; }
+.en { font-size:var(--en); line-height:1.32; font-weight:500; opacity:.92; text-wrap:balance; }
+.divider { width:70px; height:2px; background:#777; margin:28px auto; opacity:.7; }
+.counter { opacity:.32; font-size:15px; margin-bottom:24px; }
+.controls { position:fixed; left:0; right:0; bottom:0; display:flex; flex-wrap:wrap; gap:9px; justify-content:center; padding:14px; background:linear-gradient(transparent,rgba(0,0,0,.97) 35%); }
+button { border:1px solid #555; background:#1c1c1c; color:white; border-radius:10px; padding:11px 16px; font-size:15px; }
+.help { position:fixed; top:10px; right:14px; opacity:.32; font-size:12px; }
+@media (max-width:700px) {
+  :root { --zh: 30px; --en: 24px; }
+  #stage{padding:5vh 5vw 17vh;}
+  .divider{margin:18px auto;}
+}
+</style>
+</head>
+<body>
+<div class="help">← / → advance · Space next · F fullscreen · A auto</div>
+<div id="stage"><section class="card">
+    <div class="counter">1 / 67</div>
+    <div class="zh">大家好，我叫 Sam，我係陳家祥先生嘅大女。</div>
+    <div class="divider"></div>
+    <div class="en">Hello everyone. My name is Sam, and I’m Mr. Chan Ka Cheung’s eldest daughter.</div>
+    </section>
+<section class="card">
+    <div class="counter">2 / 67</div>
+    <div class="zh">首先，我想代表我哋一家，多謝大家喺百忙之中抽時間，嚟到我 Daddy 嘅 farewell party。</div>
+    <div class="divider"></div>
+    <div class="en">First, on behalf of our family, thank you all for taking time out of your busy lives to be here at my Daddy’s farewell party.</div>
+    </section>
+<section class="card">
+    <div class="counter">3 / 67</div>
+    <div class="zh">腦退化症係一個好可怕嘅疾病。由 Daddy 確診，到佢離開我哋，其實只係短短兩年嘅時間。</div>
+    <div class="divider"></div>
+    <div class="en">Dementia is a frightening illness. From the time Daddy was diagnosed until he left us, it was only two short years.</div>
+    </section>
+<section class="card">
+    <div class="counter">4 / 67</div>
+    <div class="zh">聽落好似好短，但其實亦都係一段好漫長嘅時間。佢為我哋成個家庭，帶嚟咗好大嘅改變。</div>
+    <div class="divider"></div>
+    <div class="en">It sounds like such a short time. But in many ways, it was also a very long journey, and it brought enormous changes to our whole family.</div>
+    </section>
+<section class="card">
+    <div class="counter">5 / 67</div>
+    <div class="zh">但今日，我唔想大家淨係記得 Daddy 呢兩年。</div>
+    <div class="divider"></div>
+    <div class="en">But today, I don’t want everyone to remember Daddy only for these last two years.</div>
+    </section>
+<section class="card">
+    <div class="counter">6 / 67</div>
+    <div class="zh">我更加希望大家記得，佢以前係一個點樣嘅人。</div>
+    <div class="divider"></div>
+    <div class="en">I want you to remember who he was before the illness.</div>
+    </section>
+<section class="card">
+    <div class="counter">7 / 67</div>
+    <div class="zh">佢幽默、活躍、充滿智慧，又好細心。佢總係笑笑口，總係願意幫人。無論係家人、朋友，定係學生，佢都係用真心去愛、去關心每一個人。</div>
+    <div class="divider"></div>
+    <div class="en">He was funny, active, wise and thoughtful. He always had a smile on his face and was always willing to help. Whether it was family, friends or students, he cared for people sincerely and wholeheartedly.</div>
+    </section>
+<section class="card">
+    <div class="counter">8 / 67</div>
+    <div class="zh">呢個，先係我 Daddy。</div>
+    <div class="divider"></div>
+    <div class="en">That was my Daddy.</div>
+    </section>
+<section class="card">
+    <div class="counter">9 / 67</div>
+    <div class="zh">係啱啱知道 Daddy 有呢個病嘅時候，我哋成家人都呆咗。</div>
+    <div class="divider"></div>
+    <div class="en">When we first found out Daddy had dementia, our whole family was stunned.</div>
+    </section>
+<section class="card">
+    <div class="counter">10 / 67</div>
+    <div class="zh">我記得嗰日，我哋四個坐喺一間 coffee shop，諗住我哋一家人之後應該點樣一齊去面對呢個病。</div>
+    <div class="divider"></div>
+    <div class="en">I remember the four of us sitting together in a coffee shop, trying to figure out how our family was going to face this illness.</div>
+    </section>
+<section class="card">
+    <div class="counter">11 / 67</div>
+    <div class="zh">當我、我妹同阿媽仲喊緊嘅時候，Daddy 靜咗一陣，露出佢個好 signature 嘅笑容，同我哋講：</div>
+    <div class="divider"></div>
+    <div class="en">While my sister, my mom and I were still crying, Daddy sat quietly for a moment. Then he gave us that signature smile of his and said:</div>
+    </section>
+<section class="card">
+    <div class="counter">12 / 67</div>
+    <div class="zh">「嘩，其實而家咩都唔使擔心，最緊要慢慢嚟，大家齊心就得㗎喇。」</div>
+    <div class="divider"></div>
+    <div class="en">“There’s really no need to worry so much right now. Just take things slowly. As long as we stick together, we’ll be okay.”</div>
+    </section>
+<section class="card">
+    <div class="counter">13 / 67</div>
+    <div class="zh">過咗幾日，佢又同我講：</div>
+    <div class="divider"></div>
+    <div class="en">A few days later, he said to me:</div>
+    </section>
+<section class="card">
+    <div class="counter">14 / 67</div>
+    <div class="zh">「我都活到咁大年紀喇，有呢個病冇呢個病，都唔係爭嗰幾年。」</div>
+    <div class="divider"></div>
+    <div class="en">“I’ve already lived to this age. Whether I have this illness or not, we’re only talking about a few years.”</div>
+    </section>
+<section class="card">
+    <div class="counter">15 / 67</div>
+    <div class="zh">佢話，最重要嘅係，佢覺得自己呢一生過得好開心、好充實，咁就已經足夠。</div>
+    <div class="divider"></div>
+    <div class="en">What mattered most to him was that he felt he had already lived a happy and fulfilling life. For him, that was enough.</div>
+    </section>
+<section class="card">
+    <div class="counter">16 / 67</div>
+    <div class="zh">其實，呢句說話就係 Daddy 一生嘅寫照。</div>
+    <div class="divider"></div>
+    <div class="en">That sentence really summed up the way Daddy lived.</div>
+    </section>
+<section class="card">
+    <div class="counter">17 / 67</div>
+    <div class="zh">佢唔追求好多物質，好容易滿足。一餐好食嘅飯、一班老朋友、一場波、一杯啤酒、一家人健健康康，對佢嚟講，就已經係幸福。</div>
+    <div class="divider"></div>
+    <div class="en">He never needed very much. A good meal, old friends, a game of ball, a beer, and knowing that his family was healthy — that was happiness to him.</div>
+    </section>
+<section class="card">
+    <div class="counter">18 / 67</div>
+    <div class="zh">到後來屋企裝修，媽咪返咗香港，Daddy 搬咗嚟我屋企，足足住咗兩個月。</div>
+    <div class="divider"></div>
+    <div class="en">Later, while our home was being renovated and Mom was in Hong Kong, Daddy came to stay with me for two full months.</div>
+    </section>
+<section class="card">
+    <div class="counter">19 / 67</div>
+    <div class="zh">而家回想返，我反而覺得呢兩個月係一份禮物。</div>
+    <div class="divider"></div>
+    <div class="en">Looking back now, I see those two months as a gift.</div>
+    </section>
+<section class="card">
+    <div class="counter">20 / 67</div>
+    <div class="zh">每日我哋一齊食早餐、散步、打下拳、睇電視。</div>
+    <div class="divider"></div>
+    <div class="en">Every day we ate breakfast together, went for walks, boxed a little, and watched TV.</div>
+    </section>
+<section class="card">
+    <div class="counter">21 / 67</div>
+    <div class="zh">我仲記得有一個晏晝，我同 Daddy 去咗公園散步。我哋坐喺張長櫈度，曬住太陽，乜都冇講，只係靜靜哋坐喺度，就已經覺得好滿足。</div>
+    <div class="divider"></div>
+    <div class="en">I remember one afternoon when Daddy and I went for a walk in the park. We sat together on a bench in the sunshine. We didn’t have to say anything. Just sitting there together felt completely satisfying.</div>
+    </section>
+<section class="card">
+    <div class="counter">22 / 67</div>
+    <div class="zh">嗰一刻，我明白點解 Daddy 成日都咁開心。</div>
+    <div class="divider"></div>
+    <div class="en">In that moment, I understood why Daddy was so often happy.</div>
+    </section>
+<section class="card">
+    <div class="counter">23 / 67</div>
+    <div class="zh">因為佢一直都知道，真正重要嘅，從來唔係擁有幾多，而係同邊個一齊。</div>
+    <div class="divider"></div>
+    <div class="en">He always knew that what mattered most wasn’t how much you had — it was who you were with.</div>
+    </section>
+<section class="card">
+    <div class="counter">24 / 67</div>
+    <div class="zh">當 Daddy 慢慢退化嘅時候，佢心裏面始終都仲係掛住屋企。</div>
+    <div class="divider"></div>
+    <div class="en">As Daddy gradually declined, he still kept thinking about home.</div>
+    </section>
+<section class="card">
+    <div class="counter">25 / 67</div>
+    <div class="zh">媽咪返咗香港嗰段時間，Daddy 入咗老人院。嗰陣佢日日問：「媽咪去咗邊呀？」</div>
+    <div class="divider"></div>
+    <div class="en">While Mom was in Hong Kong and Daddy was living in a care home, he would ask every day, “Where’s Mom?”</div>
+    </section>
+<section class="card">
+    <div class="counter">26 / 67</div>
+    <div class="zh">等到媽咪返嚟之後，Daddy 仲反過嚟安慰佢。</div>
+    <div class="divider"></div>
+    <div class="en">When she came back, Daddy was the one who comforted her.</div>
+    </section>
+<section class="card">
+    <div class="counter">27 / 67</div>
+    <div class="zh">佢同媽咪講：</div>
+    <div class="divider"></div>
+    <div class="en">He told her:</div>
+    </section>
+<section class="card">
+    <div class="counter">28 / 67</div>
+    <div class="zh">「兩公婆唔使咁計較。你需要休息，就去休息啦，冇話邊個爭邊個。」</div>
+    <div class="divider"></div>
+    <div class="en">“Husband and wife don’t need to keep score. If you need to rest, then go and rest. Nobody owes anybody anything.”</div>
+    </section>
+<section class="card">
+    <div class="counter">29 / 67</div>
+    <div class="zh">到咗嗰個時候，佢最掛心嘅，仍然唔係自己，而係身邊每一個人。</div>
+    <div class="divider"></div>
+    <div class="en">Even then, the person he worried about most was never himself. It was the people around him.</div>
+    </section>
+<section class="card">
+    <div class="counter">30 / 67</div>
+    <div class="zh">而其實，就算喺佢病得比較後期、記憶開始模糊嘅時候，佢心入面仍然一直掛住兩樣嘢——屋企，同佢嘅學生。</div>
+    <div class="divider"></div>
+    <div class="en">Even later, when his illness had progressed and his memory was becoming unclear, there were still two things that stayed deeply rooted in him: his family, and his students.</div>
+    </section>
+<section class="card">
+    <div class="counter">31 / 67</div>
+    <div class="zh">我記得有一次佢同我講，佢好忙。</div>
+    <div class="divider"></div>
+    <div class="en">I remember one day he told me he was very busy.</div>
+    </section>
+<section class="card">
+    <div class="counter">32 / 67</div>
+    <div class="zh">我問佢：「你而家仲擔心啲咩呀？」</div>
+    <div class="divider"></div>
+    <div class="en">I asked him, “What are you still worried about?”</div>
+    </section>
+<section class="card">
+    <div class="counter">33 / 67</div>
+    <div class="zh">佢好認真咁答我：「我要改卷啊，同埋要寫卷、作卷，聽日要交。」</div>
+    <div class="divider"></div>
+    <div class="en">He answered very seriously, “I have papers to mark. I have to write the test questions too. They’re due tomorrow.”</div>
+    </section>
+<section class="card">
+    <div class="counter">34 / 67</div>
+    <div class="zh">我哋同佢講：「Daddy，你已經退休㗎啦，所有嘢都做完㗎啦。」</div>
+    <div class="divider"></div>
+    <div class="en">We told him, “Daddy, you’re retired. You’ve already finished all of that.”</div>
+    </section>
+<section class="card">
+    <div class="counter">35 / 67</div>
+    <div class="zh">佢停一停，好似諗緊咩咁，又話：</div>
+    <div class="divider"></div>
+    <div class="en">He paused for a moment, then said:</div>
+    </section>
+<section class="card">
+    <div class="counter">36 / 67</div>
+    <div class="zh">「有個學生嚟探我，問咗啲問題，我答咗佢，但我唔知啱唔啱……死啦，如果答錯咗點算？我應該點答佢好呢？」</div>
+    <div class="divider"></div>
+    <div class="en">“A student came to visit me and asked me some questions. I answered him, but I don’t know if I was right. Oh no — what if I gave him the wrong answer? What should I have told him?”</div>
+    </section>
+<section class="card">
+    <div class="counter">37 / 67</div>
+    <div class="zh">又有一次，佢突然好緊張咁講：「Maddy 同 Allison 啲數唔得呀，我要幫佢哋補習啊。」</div>
+    <div class="divider"></div>
+    <div class="en">Another time he suddenly became very worried and said, “Maddy and Allison aren’t doing well in math. I need to tutor them.”</div>
+    </section>
+<section class="card">
+    <div class="counter">38 / 67</div>
+    <div class="zh">對佢嚟講，教育從來唔只係一份工作，而係佢身份嘅一部分（Identity）。</div>
+    <div class="divider"></div>
+    <div class="en">For Daddy, education was never just a job. It was part of his identity.</div>
+    </section>
+<section class="card">
+    <div class="counter">39 / 67</div>
+    <div class="zh">佢真係好熱愛佢嘅教學工作，亦都真係好愛佢啲學生，好上心、好認真。</div>
+    <div class="divider"></div>
+    <div class="en">He truly loved teaching, and he genuinely loved his students. He cared deeply about them and took that responsibility seriously.</div>
+    </section>
+<section class="card">
+    <div class="counter">40 / 67</div>
+    <div class="zh">呢個，就係我爸爸。</div>
+    <div class="divider"></div>
+    <div class="en">That was my father.</div>
+    </section>
+<section class="card">
+    <div class="counter">41 / 67</div>
+    <div class="zh">呢段時間，我睇住 Daddy 慢慢退化，好似變返做一個 BB 仔。</div>
+    <div class="divider"></div>
+    <div class="en">During this time, I watched Daddy slowly become almost like a little baby again.</div>
+    </section>
+<section class="card">
+    <div class="counter">42 / 67</div>
+    <div class="zh">雖然佢變返BB仔，但係佢仍然有佢嗰種「爺爺式嘅蠱惑」。</div>
+    <div class="divider"></div>
+    <div class="en">But even then, he still had that mischievous Grandpa side of him.</div>
+    </section>
+<section class="card">
+    <div class="counter">43 / 67</div>
+    <div class="zh">有時同佢食飯，佢會特唔肯自己拎住，要我餵佢匙羹食嘢，我問佢：「點解呀？係咪隻手痛呀？」</div>
+    <div class="divider"></div>
+    <div class="en">Sometimes during meals, he would refuse to hold the spoon himself and make me feed him. I’d ask, “Why? Does your hand hurt?”</div>
+    </section>
+<section class="card">
+    <div class="counter">44 / 67</div>
+    <div class="zh">佢就眯眯嘴笑住話：「阿女餵會好味啲。」</div>
+    <div class="divider"></div>
+    <div class="en">He would smile that cheeky little smile and say, “Food tastes better when my daughter feeds me.”</div>
+    </section>
+<section class="card">
+    <div class="counter">45 / 67</div>
+    <div class="zh">由細個一直都係佢照顧我，到後來變成由我照顧返佢。</div>
+    <div class="divider"></div>
+    <div class="en">When I was little, he took care of me. Eventually, it became my turn to take care of him.</div>
+    </section>
+<section class="card">
+    <div class="counter">46 / 67</div>
+    <div class="zh">我一直都好珍惜呢段時間。</div>
+    <div class="divider"></div>
+    <div class="en">I treasured that time.</div>
+    </section>
+<section class="card">
+    <div class="counter">47 / 67</div>
+    <div class="zh">如果人生真係有一日角色會交換，我好感恩，嗰個照顧 Daddy 嘅人，可以係我。</div>
+    <div class="divider"></div>
+    <div class="en">If life eventually asks us to switch roles like this, I’m grateful that I was able to be the one who cared for Daddy.</div>
+    </section>
+<section class="card">
+    <div class="counter">48 / 67</div>
+    <div class="zh">我只希望，佢可以舒服啲、安心啲，唔使再受苦。</div>
+    <div class="divider"></div>
+    <div class="en">More than anything, I wanted him to be comfortable, to feel safe, and not to suffer.</div>
+    </section>
+<section class="card">
+    <div class="counter">49 / 67</div>
+    <div class="zh">經過咗呢段時間，我哋好容易只記得 Daddy 生病嘅樣。</div>
+    <div class="divider"></div>
+    <div class="en">After living through the illness for so long, it became easy for us to remember only the version of Daddy who was sick.</div>
+    </section>
+<section class="card">
+    <div class="counter">50 / 67</div>
+    <div class="zh">直到我睇到大家寫俾 Daddy 嘅留言同回憶，我先再次記起，原來我 Daddy 影響咗咁多人。</div>
+    <div class="divider"></div>
+    <div class="en">But when I read all the messages and memories that so many of you wrote about him, I was reminded of how many people Daddy had touched.</div>
+    </section>
+<section class="card">
+    <div class="counter">51 / 67</div>
+    <div class="zh">大家記得佢嘅幽默、記得佢嘅善良、記得佢點樣鼓勵人、幫助人。</div>
+    <div class="divider"></div>
+    <div class="en">You remembered his humour. His kindness. The way he encouraged people and helped them.</div>
+    </section>
+<section class="card">
+    <div class="counter">52 / 67</div>
+    <div class="zh">原來，Daddy 留低嘅，遠遠唔止我哋一家。</div>
+    <div class="divider"></div>
+    <div class="en">I was reminded that what Daddy leaves behind reaches far beyond our family.</div>
+    </section>
+<section class="card">
+    <div class="counter">53 / 67</div>
+    <div class="zh">所以，我真係好多謝大家。</div>
+    <div class="divider"></div>
+    <div class="en">So I want to thank all of you.</div>
+    </section>
+<section class="card">
+    <div class="counter">54 / 67</div>
+    <div class="zh">多謝你哋一直記得佢，亦都令我再次記起，我 Daddy 真正嘅樣子。</div>
+    <div class="divider"></div>
+    <div class="en">Thank you for remembering him, and for helping me remember who my Daddy truly was.</div>
+    </section>
+<section class="card">
+    <div class="counter">55 / 67</div>
+    <div class="zh">雖然我真係好唔捨得，要同 Daddy 講再見。</div>
+    <div class="divider"></div>
+    <div class="en">As hard as it is for me to say goodbye,</div>
+    </section>
+<section class="card">
+    <div class="counter">56 / 67</div>
+    <div class="zh">但我知道，佢終於唔使再受苦。</div>
+    <div class="divider"></div>
+    <div class="en">I know that his passing also means he no longer has to suffer.</div>
+    </section>
+<section class="card">
+    <div class="counter">57 / 67</div>
+    <div class="zh">我希望佢喺天堂，可以再同uncle MO一齊打波、飲酒；同班老朋友一齊食燒鵝、食燒腩仔；繼續跑步、睇武俠小說，做返所有佢鍾意做嘅事。</div>
+    <div class="divider"></div>
+    <div class="en">I hope that in heaven, he can play ball and have a beer with Uncle Mo again; eat roast goose and crispy pork with his old friends; run, read his martial-arts novels, and do all the things he loved.</div>
+    </section>
+<section class="card">
+    <div class="counter">58 / 67</div>
+    <div class="zh">我亦都希望，佢可以見返所有佢掛住嘅屋企人。</div>
+    <div class="divider"></div>
+    <div class="en">I hope he can see all the family members he has missed.</div>
+    </section>
+<section class="card">
+    <div class="counter">59 / 67</div>
+    <div class="zh">唔使再驚。</div>
+    <div class="divider"></div>
+    <div class="en">No more fear.</div>
+    </section>
+<section class="card">
+    <div class="counter">60 / 67</div>
+    <div class="zh">唔使再辛苦。</div>
+    <div class="divider"></div>
+    <div class="en">No more struggle.</div>
+    </section>
+<section class="card">
+    <div class="counter">61 / 67</div>
+    <div class="zh">Daddy，</div>
+    <div class="divider"></div>
+    <div class="en">Daddy,</div>
+    </section>
+<section class="card">
+    <div class="counter">62 / 67</div>
+    <div class="zh">我而家真係好掛住你。</div>
+    <div class="divider"></div>
+    <div class="en">I miss you so much.</div>
+    </section>
+<section class="card">
+    <div class="counter">63 / 67</div>
+    <div class="zh">多謝你教識我，咩叫善良，咩叫知足，咩叫愛一個家庭。</div>
+    <div class="divider"></div>
+    <div class="en">Thank you for teaching me what kindness means, what it means to be content, and what it means to love a family.</div>
+    </section>
+<section class="card">
+    <div class="counter">64 / 67</div>
+    <div class="zh">我知道，係時候要同你講再見。</div>
+    <div class="divider"></div>
+    <div class="en">I know it’s time for me to say goodbye.</div>
+    </section>
+<section class="card">
+    <div class="counter">65 / 67</div>
+    <div class="zh">今日，我哋一齊打開一罐啤酒，同你飲最後一杯。</div>
+    <div class="divider"></div>
+    <div class="en">Today, we’re all going to open a beer and have one last drink with you.</div>
+    </section>
+<section class="card">
+    <div class="counter">66 / 67</div>
+    <div class="zh">Cheers, Daddy.</div>
+    <div class="divider"></div>
+    <div class="en">Cheers, Daddy.</div>
+    </section>
+<section class="card">
+    <div class="counter">67 / 67</div>
+    <div class="zh">I love you very much.</div>
+    <div class="divider"></div>
+    <div class="en">I love you very much.</div>
+    </section></div>
+<div class="controls">
+<button onclick="prev()">◀ Previous</button>
+<button onclick="toggleAuto()" id="autoBtn">Auto: Off</button>
+<button onclick="font(-3)">A−</button>
+<button onclick="font(3)">A+</button>
+<button onclick="full()">Fullscreen</button>
+<button onclick="next()">Next ▶</button>
+</div>
+<script>
+let idx=0, timer=null, zh=42, en=34;
+const cards=[...document.querySelectorAll('.card')];
+function show(){ cards.forEach((c,i)=>c.classList.toggle('active',i===idx)); }
+function next(){ if(idx<cards.length-1) idx++; show(); }
+function prev(){ if(idx>0) idx--; show(); }
+function font(d){
+ zh=Math.max(24,Math.min(72,zh+d));
+ en=Math.max(19,Math.min(58,en+d));
+ document.documentElement.style.setProperty('--zh',zh+'px');
+ document.documentElement.style.setProperty('--en',en+'px');
+}
+function full(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+function toggleAuto(){
+ const b=document.getElementById('autoBtn');
+ if(timer){ clearInterval(timer); timer=null; b.textContent='Auto: Off'; }
+ else { timer=setInterval(next,9000); b.textContent='Auto: 9 sec'; }
+}
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next();}
+ if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+ if(e.key.toLowerCase()==='f') full();
+ if(e.key.toLowerCase()==='a') toggleAuto();
+});
+show();
+</script>
+</body>
+</html>
